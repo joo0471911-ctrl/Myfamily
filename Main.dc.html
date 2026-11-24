@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<title>পরিবারের ক্যালোরি পরিকল্পনা</title>
+<script src="./support.js"></script>
+<script>
+/* Standalone hosting: this file is a Claude Design page. If it is opened directly (no design runtime), hand over to index.html, which renders it with dc-lite.js. */
+(function () {
+  if (typeof DCLogic !== 'undefined' || window.top !== window) return;
+  var m = /([A-Za-z]+)\.dc(?:\.html)?\/?$/.exec(location.pathname);
+  if (!m) return;
+  var name = m[1].charAt(0).toUpperCase() + m[1].slice(1).toLowerCase();
+  location.replace(location.pathname.replace(/[^\/]*$/, '') + 'index.html?page=' + name);
+})();
+</script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'Noto Sans Bengali','Noto Sans',system-ui,sans-serif;background:#F6F4EE;color:#1E2A22}
+button,input{font-family:inherit}
+</style>
+</helmet>
+<div style="box-sizing:border-box;width:100%;max-width:1120px;margin:0 auto;padding:28px 16px 56px;display:flex;flex-direction:column;gap:20px;background:#F6F4EE;color:#1E2A22;font-family:'Noto Sans Bengali','Noto Sans',system-ui,sans-serif">
+
+<header style="display:flex;flex-direction:column;gap:6px">
+<a href="App.dc.html" style="align-self:flex-start;display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:999px;background:#3F7D2B;color:#FFFFFF;font-size:16px;font-weight:600;text-decoration:none">Thala মিল প্ল্যানার খুলুন →</a>
+<h1 style="margin:0;font-size:34px;line-height:1.25;font-weight:700;color:#1E2A22">আমার পরিবারের খাবার পরিকল্পনা</h1>
+<p style="margin:0;font-size:17px;line-height:1.55;color:#55605A">প্রত্যেক সদস্যের বয়স, ওজন ও কাজের ধরন দিন। দেখুন কার দিনে কত ক্যালোরি লাগবে এবং কী কী খাবারে সেটা পূরণ হবে।</p>
+</header>
+
+<section aria-label="পুরো পরিবারের সারাংশ" style="background:#FFFFFF;border:1px solid #E3DECF;border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:18px">
+<div style="display:flex;flex-wrap:wrap;gap:16px 32px;align-items:flex-end;justify-content:space-between">
+<div style="display:flex;flex-direction:column;gap:2px">
+<span style="font-size:15px;color:#55605A">পুরো পরিবারের জন্য দিনে প্রয়োজন</span>
+<span style="font-size:44px;line-height:1.15;font-weight:700;color:#2E5F1F">{{totalTarget}} <span style="font-size:20px;font-weight:500;color:#55605A">ক্যালোরি</span></span>
+</div>
+<div style="display:flex;flex-direction:column;gap:2px;text-align:right">
+<span style="font-size:15px;color:#55605A">এখন পরিকল্পনায় আছে</span>
+<span style="font-size:28px;line-height:1.2;font-weight:600;color:#1E2A22">{{totalPlanned}} ক্যালোরি</span>
+</div>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:12px">
+<sc-for list="{{members}}" as="m" hint-placeholder-count="4">
+<button type="button" onClick="{{m.pick}}" aria-pressed="{{m.pressed}}" style="{{m.cardStyle}}">
+<span style="display:flex;justify-content:space-between;gap:8px;align-items:baseline;width:100%">
+<span style="font-size:18px;font-weight:600">{{m.name}}</span>
+<span style="font-size:14px;color:#55605A">{{m.meta}}</span>
+</span>
+<span style="font-size:24px;font-weight:700;color:#2E5F1F">{{m.target}} <span style="font-size:14px;font-weight:500;color:#55605A">ক্যালোরি/দিন</span></span>
+<span style="display:block;width:100%;height:8px;border-radius:999px;background:#E6E2D6;overflow:hidden"><span style="{{m.barStyle}}"></span></span>
+<span style="font-size:14px;color:#55605A">পরিকল্পনা: {{m.planned}}</span>
+</button>
+</sc-for>
+<button type="button" onClick="{{addMember}}" style="flex:1 1 180px;min-height:44px;border-radius:16px;border:1.5px dashed #8A948C;background:transparent;color:#2E5F1F;font-size:16px;font-weight:600;cursor:pointer;padding:12px">+ নতুন সদস্য</button>
+</div>
+</section>
+
+<section aria-label="সদস্যের বিস্তারিত" style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start">
+
+<div style="flex:1 1 300px;min-width:0;background:#FFFFFF;border:1px solid #E3DECF;border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:18px">
+<h2 style="margin:0;font-size:22px;font-weight:700">সদস্যের তথ্য</h2>
+
+<div style="display:flex;flex-direction:column;gap:6px">
+<label for="memberName" style="font-size:15px;font-weight:500;color:#55605A">নাম</label>
+<input id="memberName" type="text" value="{{sel.name}}" onInput="{{setName}}" style="box-sizing:border-box;width:100%;min-height:44px;padding:0 14px;border-radius:12px;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22;font-size:17px">
+</div>
+
+<div style="display:flex;flex-direction:column;gap:10px">
+<sc-for list="{{steppers}}" as="s" hint-placeholder-count="3">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+<span style="font-size:16px;font-weight:500">{{s.label}}</span>
+<span style="display:flex;align-items:center;gap:10px">
+<button type="button" onClick="{{s.dec}}" aria-label="{{s.decLabel}}" style="width:44px;height:44px;border-radius:12px;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22;font-size:22px;line-height:1;cursor:pointer">−</button>
+<span style="min-width:84px;text-align:center;font-size:18px;font-weight:600">{{s.value}}</span>
+<button type="button" onClick="{{s.inc}}" aria-label="{{s.incLabel}}" style="width:44px;height:44px;border-radius:12px;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22;font-size:22px;line-height:1;cursor:pointer">+</button>
+</span>
+</div>
+</sc-for>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:8px">
+<span style="font-size:15px;font-weight:500;color:#55605A">লিঙ্গ</span>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<sc-for list="{{sexPills}}" as="p" hint-placeholder-count="2">
+<button type="button" onClick="{{p.pick}}" aria-pressed="{{p.on}}" style="{{p.style}}">{{p.label}}</button>
+</sc-for>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:8px">
+<span style="font-size:15px;font-weight:500;color:#55605A">দিনে কতটা কাজ বা চলাফেরা করেন</span>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<sc-for list="{{actPills}}" as="p" hint-placeholder-count="3">
+<button type="button" onClick="{{p.pick}}" aria-pressed="{{p.on}}" style="{{p.style}}">{{p.label}}</button>
+</sc-for>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:8px">
+<span style="font-size:15px;font-weight:500;color:#55605A">লক্ষ্য</span>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<sc-for list="{{goalPills}}" as="p" hint-placeholder-count="3">
+<button type="button" onClick="{{p.pick}}" aria-pressed="{{p.on}}" style="{{p.style}}">{{p.label}}</button>
+</sc-for>
+</div>
+</div>
+
+<sc-if value="{{canRemove}}" hint-placeholder-val="{{true}}">
+<button type="button" onClick="{{removeMember}}" style="min-height:44px;border-radius:12px;border:1.5px solid #C9C3B3;background:transparent;color:#9B2C22;font-size:15px;font-weight:600;cursor:pointer">এই সদস্যকে সরিয়ে দিন</button>
+</sc-if>
+</div>
+
+<div style="flex:2 1 440px;min-width:0;display:flex;flex-direction:column;gap:20px">
+
+<div style="background:#FFFFFF;border:1px solid #E3DECF;border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between;align-items:flex-end">
+<div style="display:flex;flex-direction:column;gap:2px">
+<span style="font-size:15px;color:#55605A">{{sel.name}}-এর জন্য দিনে প্রয়োজন</span>
+<span style="font-size:40px;line-height:1.15;font-weight:700;color:#2E5F1F">{{selTarget}} <span style="font-size:18px;font-weight:500;color:#55605A">ক্যালোরি</span></span>
+</div>
+<div style="display:flex;flex-direction:column;gap:2px;text-align:right">
+<span style="font-size:15px;color:#55605A">বাছাই করা খাবারে</span>
+<span style="font-size:26px;line-height:1.2;font-weight:600">{{selPlanned}} ক্যালোরি</span>
+</div>
+</div>
+<div role="progressbar" aria-label="দিনের ক্যালোরি লক্ষ্যের কত অংশ পূরণ হয়েছে" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{selPct}}" style="width:100%;height:14px;border-radius:999px;background:#E6E2D6;overflow:hidden"><div style="{{selBarStyle}}"></div></div>
+<p style="{{statusStyle}}">{{statusText}}</p>
+<div style="display:flex;flex-wrap:wrap;gap:10px">
+<button type="button" onClick="{{autoPlan}}" style="min-height:44px;padding:0 20px;border-radius:999px;border:1.5px solid #3F7D2B;background:#3F7D2B;color:#FFFFFF;font-size:16px;font-weight:600;cursor:pointer">স্বয়ংক্রিয় পরিকল্পনা করুন</button>
+<button type="button" onClick="{{clearPlan}}" style="min-height:44px;padding:0 20px;border-radius:999px;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22;font-size:16px;font-weight:600;cursor:pointer">সব মুছুন</button>
+</div>
+</div>
+
+<div style="background:#FFFFFF;border:1px solid #E3DECF;border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:22px">
+<h2 style="margin:0;font-size:22px;font-weight:700">কী কী খাবেন</h2>
+<sc-for list="{{groups}}" as="grp" hint-placeholder-count="5">
+<div style="display:flex;flex-direction:column;gap:4px">
+<h3 style="margin:0 0 4px;font-size:17px;font-weight:600;color:#2E5F1F">{{grp.title}}</h3>
+<sc-for list="{{grp.foods}}" as="f" hint-placeholder-count="3">
+<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px;padding:10px 0;border-top:1px solid #EEEADF">
+<div style="display:flex;flex-direction:column;gap:1px;min-width:150px;flex:1 1 150px">
+<span style="font-size:17px;font-weight:500">{{f.name}}</span>
+<span style="font-size:14px;color:#55605A">{{f.serving}} · {{f.kcal}} ক্যালোরি</span>
+</div>
+<sc-if value="{{f.fits}}" hint-placeholder-val="{{false}}">
+<span style="font-size:13px;font-weight:600;color:#2E5F1F;background:#E3F0E7;border-radius:999px;padding:4px 10px">বাকি ক্যালোরিতে মানাবে</span>
+</sc-if>
+<span style="display:flex;align-items:center;gap:10px">
+<button type="button" onClick="{{f.dec}}" aria-label="{{f.decLabel}}" style="width:44px;height:44px;border-radius:12px;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22;font-size:22px;line-height:1;cursor:pointer">−</button>
+<span style="min-width:28px;text-align:center;font-size:18px;font-weight:700">{{f.count}}</span>
+<button type="button" onClick="{{f.inc}}" aria-label="{{f.incLabel}}" style="width:44px;height:44px;border-radius:12px;border:1.5px solid #3F7D2B;background:#3F7D2B;color:#FFFFFF;font-size:22px;line-height:1;cursor:pointer">+</button>
+</span>
+</div>
+</sc-for>
+</div>
+</sc-for>
+</div>
+
+</div>
+</section>
+
+<p style="margin:0;font-size:14px;line-height:1.6;color:#55605A">হিসাবটি Mifflin-St Jeor সূত্র ও সাধারণ কাজের মাত্রার ওপর ভিত্তি করে আনুমানিক। খাবারের ক্যালোরি আনুমানিক গড় মান। শিশু, গর্ভবতী বা অসুস্থ সদস্যের জন্য পুষ্টিবিদ বা চিকিৎসকের পরামর্শ নিন।</p>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":1700}}'>
+const FOODS = [
+  {id:'dim',n:'ডিম সিদ্ধ',s:'১টি',k:78,g:'break'},
+  {id:'porota',n:'পরোটা',s:'১টি',k:260,g:'break'},
+  {id:'muri',n:'মুড়ি',s:'১ বাটি',k:110,g:'break'},
+  {id:'bhat',n:'ভাত',s:'১ কাপ',k:200,g:'main'},
+  {id:'ruti',n:'আটার রুটি',s:'১টি',k:100,g:'main'},
+  {id:'khichuri',n:'খিচুড়ি',s:'১ প্লেট',k:300,g:'main'},
+  {id:'dal',n:'ডাল',s:'১ বাটি',k:120,g:'curry'},
+  {id:'sobji',n:'মিক্স সবজি',s:'১ বাটি',k:90,g:'curry'},
+  {id:'alu',n:'আলু ভর্তা',s:'১ বাটি',k:110,g:'curry'},
+  {id:'mach',n:'মাছের ঝোল',s:'১ টুকরা',k:140,g:'prot'},
+  {id:'murgi',n:'মুরগির মাংস',s:'১ টুকরা',k:190,g:'prot'},
+  {id:'goru',n:'গরুর মাংস',s:'১ টুকরা',k:250,g:'prot'},
+  {id:'dudh',n:'দুধ',s:'১ গ্লাস',k:150,g:'snack'},
+  {id:'doi',n:'টক দই',s:'১ বাটি',k:100,g:'snack'},
+  {id:'kola',n:'কলা',s:'১টি',k:105,g:'snack'},
+  {id:'apel',n:'আপেল',s:'১টি',k:95,g:'snack'},
+  {id:'badam',n:'বাদাম',s:'১ মুঠো',k:170,g:'snack'}
+];
+const GROUPS = [
+  ['break','সকালের নাস্তা'],
+  ['main','ভাত ও রুটি'],
+  ['curry','ডাল ও সবজি'],
+  ['prot','মাছ ও মাংস'],
+  ['snack','ফল, দুধ ও হালকা নাস্তা']
+];
+const ACT = [['light','হালকা'],['mod','মাঝারি'],['active','সক্রিয়']];
+const GOAL = [['lose','ওজন কমানো'],['keep','ওজন ঠিক রাখা'],['gain','ওজন বাড়ানো']];
+const SEX = [['m','পুরুষ'],['f','নারী']];
+const PILL_BASE = 'min-height:44px;padding:0 18px;border-radius:999px;font-size:16px;font-weight:600;cursor:pointer;';
+const PILL_ON = PILL_BASE + 'border:1.5px solid #3F7D2B;background:#3F7D2B;color:#FFFFFF;';
+const PILL_OFF = PILL_BASE + 'border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22;';
+const CARD_BASE = 'flex:1 1 200px;min-width:0;box-sizing:border-box;display:flex;flex-direction:column;align-items:flex-start;gap:8px;text-align:left;border-radius:16px;padding:14px 16px;cursor:pointer;color:#1E2A22;';
+const CARD_ON = CARD_BASE + 'border:2px solid #3F7D2B;background:#EEF6F0;';
+const CARD_OFF = CARD_BASE + 'border:1.5px solid #D8D2C2;background:#FFFFFF;';
+
+function bn(n) {
+  return Math.round(n).toLocaleString('en-US').replace(/\d/g, function (d) { return '০১২৩৪৫৬৭৮৯'[d]; });
+}
+
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const members = [
+      {id:1,name:'বাবা',age:42,sex:'m',w:75,h:170,act:'mod',goal:'keep'},
+      {id:2,name:'মা',age:38,sex:'f',w:60,h:159,act:'light',goal:'keep'},
+      {id:3,name:'ছেলে',age:14,sex:'m',w:48,h:158,act:'active',goal:'keep'},
+      {id:4,name:'মেয়ে',age:9,sex:'f',w:28,h:130,act:'active',goal:'keep'}
+    ];
+    const plans = {};
+    members.forEach((m) => { plans[m.id] = this.makePlan(this.calcTarget(m)); });
+    this.state = { sel: 1, nextId: 5, members: members, plans: plans };
+  }
+
+  calcTarget(m) {
+    const bmr = 10 * m.w + 6.25 * m.h - 5 * m.age + (m.sex === 'm' ? 5 : -161);
+    const f = { light: 1.375, mod: 1.55, active: 1.725 }[m.act];
+    let t = bmr * f;
+    if (m.goal === 'lose') t -= 400;
+    if (m.goal === 'gain') t += 300;
+    return Math.max(1200, Math.round(t / 10) * 10);
+  }
+
+  makePlan(target) {
+    const p = { dim: 1, ruti: 2, dal: 2, sobji: 2, mach: 1, doi: 1, kola: 1 };
+    if (target > 1900) p.murgi = 1;
+    if (target > 1700) p.dudh = 1;
+    let base = 0;
+    FOODS.forEach((f) => { base += (p[f.id] || 0) * f.k; });
+    const rice = Math.min(6, Math.max(2, Math.round((target - base) / 200)));
+    p.bhat = rice;
+    return p;
+  }
+
+  planTotal(plan) {
+    let t = 0;
+    FOODS.forEach((f) => { t += ((plan || {})[f.id] || 0) * f.k; });
+    return t;
+  }
+
+  updateMember(patch) {
+    const sel = this.state.sel;
+    this.setState({ members: this.state.members.map((m) => (m.id === sel ? Object.assign({}, m, patch) : m)) });
+  }
+
+  setCount(foodId, delta) {
+    const sel = this.state.sel;
+    const cur = Object.assign({}, this.state.plans[sel] || {});
+    const next = Math.max(0, Math.min(12, (cur[foodId] || 0) + delta));
+    cur[foodId] = next;
+    const plans = Object.assign({}, this.state.plans);
+    plans[sel] = cur;
+    this.setState({ plans: plans });
+  }
+
+  renderVals() {
+    const st = this.state;
+    const sel = st.members.find((m) => m.id === st.sel) || st.members[0];
+    const selTarget = this.calcTarget(sel);
+    const selPlan = st.plans[sel.id] || {};
+    const selPlanned = this.planTotal(selPlan);
+    const diff = selTarget - selPlanned;
+    const pctRaw = selTarget > 0 ? (selPlanned / selTarget) * 100 : 0;
+    const pct = Math.min(100, Math.round(pctRaw));
+    const over = diff < 0;
+
+    let totalTarget = 0;
+    let totalPlanned = 0;
+    const members = st.members.map((m) => {
+      const target = this.calcTarget(m);
+      const planned = this.planTotal(st.plans[m.id]);
+      totalTarget += target;
+      totalPlanned += planned;
+      const p = Math.min(100, Math.round((planned / target) * 100));
+      const isOver = planned > target;
+      return {
+        name: m.name,
+        meta: bn(m.age) + ' বছর · ' + bn(m.w) + ' কেজি',
+        target: bn(target),
+        planned: bn(planned),
+        pressed: m.id === st.sel,
+        cardStyle: m.id === st.sel ? CARD_ON : CARD_OFF,
+        barStyle: 'display:block;height:100%;border-radius:999px;width:' + p + '%;background:' + (isOver ? '#B3261E' : '#3F7D2B'),
+        pick: () => this.setState({ sel: m.id })
+      };
+    });
+
+    const steppers = [
+      { label: 'বয়স', value: bn(sel.age) + ' বছর', dec: () => this.updateMember({ age: Math.max(2, sel.age - 1) }), inc: () => this.updateMember({ age: Math.min(100, sel.age + 1) }), decLabel: 'বয়স কমান', incLabel: 'বয়স বাড়ান' },
+      { label: 'ওজন', value: bn(sel.w) + ' কেজি', dec: () => this.updateMember({ w: Math.max(10, sel.w - 1) }), inc: () => this.updateMember({ w: Math.min(200, sel.w + 1) }), decLabel: 'ওজন কমান', incLabel: 'ওজন বাড়ান' },
+      { label: 'উচ্চতা', value: bn(sel.h) + ' সেমি', dec: () => this.updateMember({ h: Math.max(80, sel.h - 1) }), inc: () => this.updateMember({ h: Math.min(220, sel.h + 1) }), decLabel: 'উচ্চতা কমান', incLabel: 'উচ্চতা বাড়ান' }
+    ];
+
+    const pills = (list, key) => list.map((o) => ({
+      label: o[1],
+      on: sel[key] === o[0],
+      style: sel[key] === o[0] ? PILL_ON : PILL_OFF,
+      pick: () => { const patch = {}; patch[key] = o[0]; this.updateMember(patch); }
+    }));
+
+    const groups = GROUPS.map((g) => ({
+      title: g[1],
+      foods: FOODS.filter((f) => f.g === g[0]).map((f) => ({
+        name: f.n,
+        serving: f.s,
+        kcal: bn(f.k),
+        count: bn(selPlan[f.id] || 0),
+        fits: diff >= f.k,
+        dec: () => this.setCount(f.id, -1),
+        inc: () => this.setCount(f.id, 1),
+        decLabel: f.n + ' কমান',
+        incLabel: f.n + ' বাড়ান'
+      }))
+    }));
+
+    let statusText;
+    if (over) statusText = bn(-diff) + ' ক্যালোরি বেশি হয়ে গেছে। কিছু খাবার কমিয়ে নিন।';
+    else if (diff < 60) statusText = 'দিনের লক্ষ্য প্রায় পূরণ হয়েছে।';
+    else statusText = 'আরও ' + bn(diff) + ' ক্যালোরির খাবার খেতে পারবেন।';
+
+    return {
+      totalTarget: bn(totalTarget),
+      totalPlanned: bn(totalPlanned),
+      members: members,
+      sel: sel,
+      selTarget: bn(selTarget),
+      selPlanned: bn(selPlanned),
+      selPct: pct,
+      selBarStyle: 'height:100%;border-radius:999px;width:' + pct + '%;background:' + (over ? '#B3261E' : '#3F7D2B'),
+      statusText: statusText,
+      statusStyle: 'margin:0;font-size:17px;font-weight:600;color:' + (over ? '#9B2C22' : '#2E5F1F'),
+      steppers: steppers,
+      sexPills: pills(SEX, 'sex'),
+      actPills: pills(ACT, 'act'),
+      goalPills: pills(GOAL, 'goal'),
+      groups: groups,
+      canRemove: st.members.length > 1,
+      setName: (e) => this.updateMember({ name: e.target.value }),
+      autoPlan: () => {
+        const plans = Object.assign({}, this.state.plans);
+        plans[sel.id] = this.makePlan(selTarget);
+        this.setState({ plans: plans });
+      },
+      clearPlan: () => {
+        const plans = Object.assign({}, this.state.plans);
+        plans[sel.id] = {};
+        this.setState({ plans: plans });
+      },
+      addMember: () => {
+        const id = this.state.nextId;
+        const m = { id: id, name: 'সদস্য ' + bn(id), age: 30, sex: 'm', w: 65, h: 165, act: 'mod', goal: 'keep' };
+        const plans = Object.assign({}, this.state.plans);
+        plans[id] = this.makePlan(this.calcTarget(m));
+        this.setState({ members: this.state.members.concat([m]), plans: plans, nextId: id + 1, sel: id });
+      },
+      removeMember: () => {
+        const rest = this.state.members.filter((m) => m.id !== sel.id);
+        const plans = Object.assign({}, this.state.plans);
+        delete plans[sel.id];
+        this.setState({ members: rest, plans: plans, sel: rest[0].id });
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

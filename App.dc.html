@@ -1,0 +1,1903 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<title>Thala অ্যাপ</title>
+<script src="./support.js"></script>
+<script>
+/* Standalone hosting: this file is a Claude Design page. If it is opened directly (no design runtime), hand over to index.html, which renders it with dc-lite.js. */
+(function () {
+  if (typeof DCLogic !== 'undefined' || window.top !== window) return;
+  var m = /([A-Za-z]+)\.dc(?:\.html)?\/?$/.exec(location.pathname);
+  if (!m) return;
+  var name = m[1].charAt(0).toUpperCase() + m[1].slice(1).toLowerCase();
+  location.replace(location.pathname.replace(/[^\/]*$/, '') + 'index.html?page=' + name);
+})();
+</script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'Noto Sans Bengali','Noto Sans',system-ui,sans-serif;background:#FAF8F2;color:#1E2A22}
+:root{--green:#3F7D2B;--green-dark:#2E5F1F;--green-tint:#EAF3E2;--ink:#1E2A22;--grey:#55605A;--line:#E3DECF;--bg:#FAF8F2;--focus:#1B4FA0}
+button,input{font-family:inherit}
+button{cursor:pointer;transition:filter .12s}
+button:hover:not(:disabled){filter:brightness(.96)}
+button:active:not(:disabled){filter:brightness(.9)}
+button:disabled{opacity:.5;cursor:not-allowed}
+button:focus-visible,input:focus-visible,select:focus-visible,[role=dialog]:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.pk:focus-within{outline:3px solid #1B4FA0;outline-offset:2px}
+.dish-wrap{animation:dishIn .7s cubic-bezier(.2,.8,.25,1) both}
+.dish-img{animation:dishZoom 14s ease-in-out infinite alternate}
+.steam{position:absolute;top:-4%;width:10px;height:34px;border-radius:50%;background:linear-gradient(to top,rgba(255,255,255,0),rgba(255,255,255,.85));filter:blur(3px);opacity:0;animation:steamUp 3.2s ease-in infinite}
+.steam.s1{left:34%}.steam.s2{left:50%;animation-delay:1s}.steam.s3{left:64%;animation-delay:2s}
+.thumb{flex:none;width:52px;height:52px;border-radius:50%;object-fit:cover;box-shadow:0 1px 4px rgba(0,0,0,.25);background:#EEE9DC}
+@keyframes dishIn{from{opacity:0;transform:scale(.55) rotate(-60deg)}to{opacity:1;transform:none}}
+@keyframes dishZoom{from{transform:scale(1)}to{transform:scale(1.12)}}
+@keyframes steamUp{0%{opacity:0;transform:translateY(8px) scaleX(1)}30%{opacity:.8}100%{opacity:0;transform:translateY(-26px) scaleX(1.6)}}
+@media (prefers-reduced-motion:reduce){.dish-wrap,.dish-img,.steam{animation:none!important}.steam{display:none}}
+</style>
+</helmet>
+<div style="width:390px;height:844px;box-sizing:border-box;position:relative;overflow:hidden;background:#FAF8F2;color:#1E2A22;font-family:'Noto Sans Bengali','Noto Sans',system-ui,sans-serif;display:flex;flex-direction:column">
+
+<sc-if value="{{showWelcome}}" hint-placeholder-val="{{true}}">
+<div style="flex:1;display:flex;flex-direction:column;background:#3F7D2B;color:#FFFFFF;padding:48px 28px 36px;box-sizing:border-box;gap:20px">
+<span style="font-size:22px;font-weight:700;letter-spacing:0.5px">Thala</span>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:16px">
+<span style="font-size:16px;font-weight:500;color:#FFFFFF">আপনার ৭ দিনের মিল প্ল্যান, কয়েক সেকেন্ডে</span>
+<h1 style="margin:0;font-size:46px;line-height:1.15;font-weight:700">Eat well,<br>spend less.</h1>
+<p style="margin:0;font-size:18px;line-height:1.6;color:#F3F8EE">ফ্যামিলি, মাসিক বাজেট আর বাজার বলুন। Thala বানিয়ে দেবে সাপ্তাহিক খাবারের প্ল্যান, প্রত্যেকের ক্যালোরির হিসাব আর টাকার হিসাবসহ গ্রোসারি লিস্ট।</p>
+</div>
+<button type="button" onClick="{{goApp}}" style="min-height:56px;border-radius:14px;border:none;background:#FFFFFF;color:#2E5F1F;font-size:18px;font-weight:700;cursor:pointer">শুরু করুন · Get started</button>
+<span style="font-size:14px;text-align:center;color:#FFFFFF">ফ্রি শুরু করা যায়।</span>
+</div>
+</sc-if>
+
+<sc-if value="{{showMain}}" hint-placeholder-val="{{false}}">
+<div style="flex:1;min-height:0;display:flex;flex-direction:column">
+
+<div style="padding:18px 20px 12px;display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-bottom:1px solid #E3DECF;background:#FAF8F2">
+<h1 style="margin:0;font-size:24px;font-weight:700">{{pageTitle}}</h1>
+<span style="font-size:16px;font-weight:700;color:#2E5F1F">Thala</span>
+</div>
+
+<sc-if value="{{showGrocery}}" hint-placeholder-val="{{false}}">
+<div style="padding:8px 20px 10px;background:#F1ECDD;border-bottom:1px solid #E3DECF;display:flex;flex-direction:column;gap:5px" aria-label="বাজারের সারসংক্ষেপ">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap">
+<span style="font-size:14px;color:#3F4A43">{{checkedText}} · <strong style="font-size:17px;color:#2E5F1F">{{spentText}}</strong></span>
+<span style="font-size:14px;color:#3F4A43">বাকি <strong style="font-size:17px;color:#1E2A22">{{remainText}}</strong></span>
+</div>
+<div style="height:6px;border-radius:999px;background:#D9D3C1;overflow:hidden"><div style="height:100%;border-radius:999px;background:#2E5F1F;width:{{spentPct}}"></div></div>
+<span style="font-size:13px;color:#3F4A43">সপ্তাহ {{weekTotalText}} · মাসে প্রায় {{monthTotalText}} / বাজেট {{monthBudgetText}}</span>
+</div>
+</sc-if>
+
+<div style="flex:1;min-height:0;overflow-y:auto;padding:16px 16px 24px;display:flex;flex-direction:column;gap:16px">
+
+<sc-if value="{{showFamily}}" hint-placeholder-val="{{false}}">
+<div style="display:flex;flex-direction:column;gap:20px">
+
+<div style="background:#FFFFFF;border:1px solid #E3DECF;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:4px">
+<span style="font-size:15px;color:#55605A">ফ্যামিলি সদস্য · {{sizeText}}</span>
+<span style="font-size:32px;font-weight:700;color:#2E5F1F;line-height:1.2">{{famTarget}} <span style="font-size:16px;font-weight:500;color:#55605A">ক্যালোরি / দিন</span></span>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:10px">
+<h2 style="margin:0;font-size:18px;font-weight:700">সদস্য <span style="font-weight:500;color:#55605A">Family members</span></h2>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<sc-for list="{{memberCards}}" as="m" hint-placeholder-count="4">
+<div style="flex:1 1 150px;min-width:0;position:relative;display:flex">
+<button type="button" onClick="{{m.pick}}" aria-pressed="{{m.on}}" style="{{m.style}}">
+<span style="font-size:17px;font-weight:600">{{m.name}}</span>
+<span style="font-size:14px;color:#55605A">{{m.meta1}}</span>
+<span style="font-size:14px;color:#55605A">{{m.meta2}}</span>
+<span style="font-size:18px;font-weight:700;color:#2E5F1F">{{m.target}} <span style="font-size:13px;font-weight:500;color:#55605A">ক্যালোরি</span></span>
+</button>
+<button type="button" onClick="{{m.openPhoto}}" aria-label="{{m.avLabel}}" style="position:absolute;top:50%;right:8px;transform:translateY(-50%);width:48px;height:48px;padding:0;border-radius:999px;border:2px solid #3F7D2B;background:#EAF3E2;color:#2E5F1F;cursor:pointer;overflow:visible;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700">
+<sc-if value="{{m.hasPhoto}}" hint-placeholder-val="{{false}}"><img src="{{m.photo}}" alt="" style="width:100%;height:100%;border-radius:999px;object-fit:cover;display:block"></sc-if>
+<sc-if value="{{m.noPhoto}}" hint-placeholder-val="{{true}}"><span aria-hidden="true">{{m.initial}}</span><span aria-hidden="true" style="position:absolute;right:-4px;bottom:-4px;width:22px;height:22px;border-radius:999px;background:#3F7D2B;color:#FFFFFF;border:2px solid #FFFFFF;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span></sc-if>
+</button>
+</div>
+</sc-for>
+<button type="button" onClick="{{addMember}}" style="flex:1 1 150px;min-height:44px;border-radius:14px;border:1.5px dashed #8A948C;background:transparent;color:#2E5F1F;font-size:16px;font-weight:600;cursor:pointer;padding:10px">+ নতুন সদস্য</button>
+</div>
+</div>
+
+<div style="background:#FFFFFF;border:1px solid #E3DECF;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:16px">
+<h2 style="margin:0;font-size:18px;font-weight:700">{{sm.name}}-এর তথ্য</h2>
+<div style="display:flex;flex-direction:column;gap:6px">
+<label for="memberName" style="font-size:15px;font-weight:500;color:#55605A">নাম</label>
+<input id="memberName" type="text" value="{{sm.name}}" onInput="{{setName}}" style="box-sizing:border-box;width:100%;min-height:44px;padding:0 14px;border-radius:14px;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22;font-size:17px">
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<span style="font-size:15px;font-weight:500;color:#55605A">ছবি</span>
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+<button type="button" onClick="{{openSmPhoto}}" aria-label="{{smAvLabel}}" style="width:56px;height:56px;padding:0;border-radius:999px;border:2px solid #3F7D2B;background:#EAF3E2;color:#2E5F1F;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700">
+<sc-if value="{{smHasPhoto}}" hint-placeholder-val="{{false}}"><img src="{{smPhoto}}" alt="" style="width:100%;height:100%;border-radius:999px;object-fit:cover;display:block"></sc-if>
+<sc-if value="{{smNoPhoto}}" hint-placeholder-val="{{true}}"><span aria-hidden="true">{{smInitial}}</span></sc-if>
+</button>
+<label class="pk" style="position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid #3F7D2B;background:#FFFFFF;color:#2E5F1F;font-size:15px;font-weight:600;cursor:pointer;box-sizing:border-box;overflow:hidden"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg> ক্যামেরা<input type="file" accept="image/*" capture="environment" aria-label="ক্যামেরা দিয়ে ছবি তুলুন" onChange="{{smCam}}" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:0"></label>
+<label class="pk" style="position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid #3F7D2B;background:#FFFFFF;color:#2E5F1F;font-size:15px;font-weight:600;cursor:pointer;box-sizing:border-box;overflow:hidden"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M4 18l5-5 4 4 3-3 4 4"/></svg> গ্যালারি<input type="file" accept="image/*" aria-label="গ্যালারি থেকে ছবি আপলোড করুন" onChange="{{smGal}}" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:0"></label>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<sc-for list="{{steppers}}" as="s" hint-placeholder-count="3">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+<span style="font-size:16px;font-weight:500">{{s.label}}</span>
+<span style="display:flex;align-items:center;gap:8px">
+<button type="button" onClick="{{s.dec}}" aria-label="{{s.decLabel}}" style="width:44px;height:44px;border-radius:14px;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22;font-size:22px;line-height:1;cursor:pointer">−</button>
+<span style="min-width:76px;text-align:center;font-size:17px;font-weight:600">{{s.value}}</span>
+<button type="button" onClick="{{s.inc}}" aria-label="{{s.incLabel}}" style="width:44px;height:44px;border-radius:14px;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22;font-size:22px;line-height:1;cursor:pointer">+</button>
+</span>
+</div>
+</sc-for>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<span style="font-size:15px;font-weight:500;color:#55605A">লিঙ্গ</span>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<sc-for list="{{sexPills}}" as="p" hint-placeholder-count="2">
+<button type="button" onClick="{{p.pick}}" aria-pressed="{{p.on}}" style="{{p.style}}">{{p.label}}</button>
+</sc-for>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<span style="font-size:15px;font-weight:500;color:#55605A">দিনে কতটা কাজ বা চলাফেরা</span>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<sc-for list="{{actPills}}" as="p" hint-placeholder-count="3">
+<button type="button" onClick="{{p.pick}}" aria-pressed="{{p.on}}" style="{{p.style}}">{{p.label}}</button>
+</sc-for>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<span style="font-size:15px;font-weight:500;color:#55605A">লক্ষ্য</span>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<sc-for list="{{goalPills}}" as="p" hint-placeholder-count="3">
+<button type="button" onClick="{{p.pick}}" aria-pressed="{{p.on}}" style="{{p.style}}">{{p.label}}</button>
+</sc-for>
+</div>
+</div>
+<sc-if value="{{canRemove}}" hint-placeholder-val="{{true}}">
+<button type="button" onClick="{{removeMember}}" style="min-height:44px;border-radius:14px;border:1.5px solid #C9C3B3;background:transparent;color:#9B2C22;font-size:15px;font-weight:600;cursor:pointer">এই সদস্যকে সরিয়ে দিন</button>
+</sc-if>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:10px">
+<h2 style="margin:0;font-size:18px;font-weight:700">ডায়েট ও অ্যালার্জি <span style="font-weight:500;color:#55605A">Diets</span></h2>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<sc-for list="{{dietList}}" as="d" hint-placeholder-count="3">
+<button type="button" onClick="{{d.pick}}" aria-pressed="{{d.on}}" style="{{d.style}}">{{d.label}}</button>
+</sc-for>
+</div>
+</div>
+
+<div style="background:#FFFFFF;border:1px solid #E3DECF;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px">
+<h2 style="margin:0;font-size:18px;font-weight:700">সেভ ও অ্যাকাউন্ট <span style="font-weight:500;color:#55605A">Save</span></h2>
+<span style="font-size:14px;line-height:1.55;color:#3F4A43">ফ্যামিলির ছবি, প্ল্যান, বাজার ও মাসের হিসাব এই ফোনের ব্রাউজারে নিজে নিজে সেভ হয়। পেজ রিফ্রেশ করলে বা পরে আবার খুললেও থাকবে।</span>
+<sc-if value="{{saveWarn}}" hint-placeholder-val="{{false}}"><p style="margin:0;font-size:14px;line-height:1.5;color:#7A4B00;background:#FFF3D6;border-radius:14px;padding:10px 12px">ব্রাউজারে ছবির জায়গা শেষ। ছবি ছাড়া বাকি সব সেভ হয়েছে। কিছু ছবি সরিয়ে দিন।</p></sc-if>
+<sc-if value="{{cloudSignedOut}}" hint-placeholder-val="{{false}}">
+<span style="font-size:14px;line-height:1.55;color:#3F4A43">Google দিয়ে লগইন করলে অন্য ফোন বা ব্রাউজারেও একই ফ্যামিলি, ছবি ও প্ল্যান পাবেন।</span>
+<button type="button" onClick="{{cloudSignIn}}" style="min-height:44px;padding:0 16px;border-radius:999px;font-size:15px;font-weight:600;cursor:pointer;border:none;background:#3F7D2B;color:#FFFFFF">Google দিয়ে লগইন করুন</button>
+</sc-if>
+<sc-if value="{{cloudSignedIn}}" hint-placeholder-val="{{false}}">
+<span style="font-size:15px;font-weight:600">লগইন আছে: {{cloudName}}</span>
+<span style="font-size:14px;color:#3F4A43">{{cloudMsg}}</span>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<button type="button" onClick="{{cloudSaveNow}}" style="min-height:44px;padding:0 16px;border-radius:999px;font-size:15px;font-weight:600;cursor:pointer;border:1.5px solid #3F7D2B;background:#FFFFFF;color:#2E5F1F">এখনই ক্লাউডে সেভ করুন</button>
+<button type="button" onClick="{{cloudSignOut}}" style="min-height:44px;padding:0 16px;border-radius:999px;font-size:15px;font-weight:600;cursor:pointer;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22">লগআউট</button>
+</div>
+</sc-if>
+<sc-if value="{{askResetOff}}" hint-placeholder-val="{{true}}"><button type="button" onClick="{{askReset}}" style="min-height:44px;padding:0 16px;border-radius:999px;font-size:15px;font-weight:600;cursor:pointer;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#9B2C22;align-self:flex-start">এই ফোনের সেভ করা তথ্য মুছুন</button></sc-if>
+<sc-if value="{{confirmReset}}" hint-placeholder-val="{{false}}">
+<span style="font-size:14px;color:#9B2C22;font-weight:600">সব ছবি, প্ল্যান ও হিসাব মুছে যাবে। নিশ্চিত?</span>
+<div style="display:flex;gap:8px"><button type="button" onClick="{{doReset}}" style="min-height:44px;padding:0 16px;border-radius:999px;font-size:15px;font-weight:600;cursor:pointer;border:none;background:#9B2C22;color:#FFFFFF">হ্যাঁ, মুছুন</button><button type="button" onClick="{{cancelReset}}" style="min-height:44px;padding:0 16px;border-radius:999px;font-size:15px;font-weight:600;cursor:pointer;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22">না</button></div>
+</sc-if>
+</div>
+
+<p style="margin:0;font-size:13px;line-height:1.6;color:#55605A">ক্যালোরির হিসাব Mifflin-St Jeor সূত্রে আনুমানিক। শিশু, গর্ভবতী বা অসুস্থ সদস্যের জন্য চিকিৎসক বা পুষ্টিবিদের পরামর্শ নিন।</p>
+</div>
+</sc-if>
+
+<sc-if value="{{showBudget}}" hint-placeholder-val="{{false}}">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="background:#FFFFFF;border:1px solid #E3DECF;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px">
+<span style="font-size:15px;color:#55605A">এই মাসের আনুমানিক বাজার · {{storeName}} · {{sizeText}}</span>
+<span style="font-size:32px;font-weight:700;color:#2E5F1F;line-height:1.2">{{monthTotalText}} <span style="font-size:16px;font-weight:500;color:#55605A">/ {{monthBudgetText}}</span></span>
+<div role="progressbar" aria-label="মাসিক বাজেটের কত অংশ খরচ হচ্ছে" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{pct}}" style="height:12px;border-radius:999px;background:#E9E4D6;overflow:hidden"><div style="{{barStyle}}"></div></div>
+<p style="{{budgetStatusStyle}}">{{budgetStatus}}</p>
+<span style="font-size:14px;color:#55605A">সপ্তাহে গড়ে {{weekTotalText}}</span>
+<sc-if value="{{fitNote}}" hint-placeholder-val="{{false}}"><p style="margin:0;font-size:14px;line-height:1.5;color:#7A4B00;background:#FFF3D6;border-radius:14px;padding:10px 12px">{{fitNote}}</p></sc-if>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:10px">
+<h2 style="margin:0;font-size:18px;font-weight:700">মাসিক বাজেট <span style="font-weight:500;color:#55605A">Monthly budget</span></h2>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:#FFFFFF;border:1px solid #E3DECF;border-radius:14px;padding:12px 14px">
+<button type="button" onClick="{{budgetDec}}" aria-label="মাসিক বাজেট কমান" style="width:48px;height:48px;border-radius:14px;border:1.5px solid #C9C3B3;background:#FFFFFF;font-size:24px;cursor:pointer;color:#1E2A22">−</button>
+<span style="font-size:32px;font-weight:700;color:#2E5F1F">{{monthBudgetText}}</span>
+<button type="button" onClick="{{budgetInc}}" aria-label="মাসিক বাজেট বাড়ান" style="width:48px;height:48px;border-radius:14px;border:1.5px solid #3F7D2B;background:#3F7D2B;font-size:24px;cursor:pointer;color:#FFFFFF">+</button>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:10px">
+<h2 style="margin:0;font-size:18px;font-weight:700">কোথা থেকে বাজার করবেন? <span style="font-weight:500;color:#55605A">Compare stores</span></h2>
+<div style="display:flex;flex-direction:column;gap:8px">
+<sc-for list="{{storeList}}" as="st" hint-placeholder-count="5">
+<button type="button" onClick="{{st.pick}}" aria-pressed="{{st.on}}" style="{{st.style}}">
+<span style="display:flex;flex-direction:column;gap:1px">
+<span style="font-size:17px;font-weight:600">{{st.name}}</span>
+<span style="font-size:14px;color:#55605A">{{st.note}}</span>
+</span>
+<span style="font-size:17px;font-weight:700">{{st.total}}</span>
+</button>
+</sc-for>
+</div>
+<span style="font-size:13px;line-height:1.5;color:#55605A">মাসিক দাম আনুমানিক। দোকান বদলালে লিস্ট ও রেসিপির দামের হিসাব বদলে যাবে।</span>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:10px">
+<h2 style="margin:0;font-size:18px;font-weight:700">মাসে কী কিনতে পারবেন <span style="font-weight:500;color:#55605A">What you can buy</span></h2>
+<span style="font-size:14px;line-height:1.5;color:#3F4A43">পণ্যের দাম ধরে, মাসিক বাজেট {{monthBudgetText}}-এর মধ্যে এই প্ল্যান অনুযায়ী মাসে এত টাকায় এই এই জিনিস কিনতে হবে। {{budgetLeftText}}।</span>
+<sc-for list="{{catRows}}" as="c" hint-placeholder-count="4">
+<div style="background:#FFFFFF;border:1px solid #E3DECF;border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px"><h3 style="margin:0;font-size:16px;font-weight:700;color:#2E5F1F">{{c.title}}</h3><span style="font-size:17px;font-weight:700">{{c.total}} <span style="font-size:13px;font-weight:500;color:#55605A">({{c.pct}})</span></span></div>
+<div style="height:8px;border-radius:999px;background:#EFEBDF;overflow:hidden"><span style="{{c.barStyle}}"></span></div>
+<sc-for list="{{c.rows}}" as="r" hint-placeholder-count="4">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:14px"><span>{{r.name}} · <strong>{{r.qty}}</strong></span><span style="color:#3F4A43">{{r.cost}}</span></div>
+</sc-for>
+</div>
+</sc-for>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:10px">
+<button type="button" onClick="{{togglePrices}}" aria-expanded="{{showPrices}}" style="min-height:52px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 16px;border-radius:14px;border:1.5px solid #3F7D2B;background:#EAF3E2;color:#1E2A22;font-size:17px;font-weight:700;cursor:pointer;text-align:left"><span>সবজি, মাছ, মাংসের দাম দেখুন ও এডিট করুন</span><span aria-hidden="true">{{pricesCaret}}</span></button>
+<sc-if value="{{showPrices}}" hint-placeholder-val="{{false}}">
+<div style="background:#FFFFFF;border:1px solid #E3DECF;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:14px">
+<span style="font-size:14px;line-height:1.5;color:#55605A">লোকাল বাজারের দাম লিখুন। এখানে বদলালে মাসিক বাজেটের হিসাব, গ্রোসারি লিস্ট ও রেসিপির দাম সব বদলে যাবে। অন্য দোকানে একটু বেশি ধরা হয়।</span>
+<sc-for list="{{priceGroups}}" as="g" hint-placeholder-count="3">
+<div style="display:flex;flex-direction:column;gap:6px">
+<h3 style="margin:0;font-size:16px;font-weight:700;color:#2E5F1F">{{g.title}}</h3>
+<sc-for list="{{g.items}}" as="x" hint-placeholder-count="4">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid #EEEADF;padding-top:6px">
+<label for="{{x.inputId}}" style="display:flex;flex-direction:column;gap:1px;min-width:0"><span style="font-size:16px;font-weight:600">{{x.name}}</span><span style="font-size:13px;color:#55605A">{{x.unit}}</span></label>
+<span style="display:flex;align-items:center;gap:6px;flex:none"><span aria-hidden="true" style="font-size:16px;font-weight:700">৳</span><input id="{{x.inputId}}" type="number" inputmode="decimal" min="0" value="{{x.value}}" onInput="{{x.set}}" style="{{x.inputStyle}}"></span>
+</div>
+</sc-for>
+</div>
+</sc-for>
+<button type="button" onClick="{{resetPrices}}" style="min-height:44px;border-radius:14px;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22;font-size:15px;font-weight:600;cursor:pointer">ডিফল্ট দাম ফিরিয়ে আনুন</button>
+</div>
+</sc-if>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{showGrocery}}" hint-placeholder-val="{{false}}">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="background:#FFFFFF;border:1px solid #E3DECF;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:8px">
+<span style="font-size:15px;color:#55605A">এই সপ্তাহের বাজার</span>
+<span style="font-size:32px;font-weight:700;color:#2E5F1F;line-height:1.2">{{weekTotalText}} <span style="font-size:16px;font-weight:500;color:#55605A">/ সপ্তাহ</span></span>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+<span style="font-size:15px">Shopping at <strong>{{storeName}}</strong></span>
+<button type="button" onClick="{{goBudget}}" style="min-height:44px;padding:0 14px;border:none;background:transparent;color:#2E5F1F;font-size:15px;font-weight:700;text-decoration:underline;cursor:pointer">Compare</button>
+</div>
+</div>
+
+<sc-if value="{{fitNote}}" hint-placeholder-val="{{false}}"><p style="margin:0;font-size:14px;line-height:1.5;color:#7A4B00;background:#FFF3D6;border-radius:14px;padding:10px 12px">{{fitNote}}</p></sc-if>
+
+<div style="background:#FFFFFF;border:1px solid #E3DECF;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+<h2 style="margin:0;font-size:18px;font-weight:700">মাসের হিসাব</h2>
+<span style="display:flex;align-items:center;gap:4px"><button type="button" onClick="{{prevMonth}}" aria-label="আগের মাস" style="min-height:44px;min-width:44px;border-radius:14px;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22;font-size:20px;cursor:pointer;">‹</button><span style="font-size:15px;font-weight:700;min-width:96px;text-align:center">{{monthTitle}}</span><button type="button" onClick="{{nextMonth}}" aria-label="পরের মাস" style="min-height:44px;min-width:44px;border-radius:14px;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22;font-size:20px;cursor:pointer;">›</button></span>
+</div>
+<span style="font-size:13px;line-height:1.5;color:#55605A">সপ্তাহে ট্যাপ করে সেই সপ্তাহ খুলুন, বাজার সেভ করুন। পরে আবার খুলে দেখতে বা আপডেট করতে পারবেন।</span>
+<div style="display:flex;flex-direction:column;gap:6px">
+<sc-for list="{{monthRows}}" as="w" hint-placeholder-count="4">
+<button type="button" onClick="{{w.pick}}" aria-pressed="{{w.on}}" aria-label="{{w.aria}}" style="{{w.rowStyle}}">
+<span style="display:flex;flex-direction:column;gap:1px;min-width:0"><span style="font-size:15px;font-weight:600">{{w.label}}</span><span style="font-size:13px;color:#55605A">{{w.sub}}</span></span>
+<span style="font-size:17px;font-weight:700;flex:none">{{w.amount}}</span>
+</button>
+</sc-for>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px solid #E3DECF;padding-top:10px">
+<span style="font-size:15px;font-weight:600">{{monthSumLabel}}</span>
+<span style="font-size:20px;font-weight:700;color:#2E5F1F">{{monthSumText}}</span>
+</div>
+<span style="font-size:14px;color:#55605A">মাসিক বাজেট {{monthBudgetText}} · {{savedCountText}}</span>
+<div style="background:#FAF8F2;border:1px solid #E3DECF;border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px">
+<span style="font-size:16px;font-weight:700">{{logHeading}}</span>
+<sc-if value="{{noLog}}" hint-placeholder-val="{{true}}"><span style="font-size:14px;color:#55605A">এই সপ্তাহ এখনও সেভ হয়নি।</span></sc-if>
+<sc-if value="{{hasLog}}" hint-placeholder-val="{{false}}">
+<span style="font-size:14px;font-weight:600;color:#2E5F1F">{{logLine}}</span>
+<span style="font-size:13px;color:#55605A">সেভ করা তালিকা:</span>
+<sc-for list="{{savedItems}}" as="i" hint-placeholder-count="5">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px solid #EEEADF;padding-top:6px">
+<span style="display:flex;flex-direction:column;min-width:0"><span style="font-size:15px;font-weight:600">{{i.name}}</span><span style="font-size:13px;color:#55605A">{{i.qty}} · {{i.price}}</span></span>
+<span style="{{i.markStyle}}">{{i.mark}}</span>
+</div>
+</sc-for>
+</sc-if>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<button type="button" onClick="{{saveWeek}}" style="{{saveStyle}}">{{saveText}}</button>
+<sc-if value="{{hasLog}}" hint-placeholder-val="{{false}}"><button type="button" onClick="{{removeLog}}" style="min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#9B2C22;font-size:15px;font-weight:600;cursor:pointer">সেভ মুছুন</button></sc-if>
+</div>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:10px">
+<button type="button" onClick="{{toggleAddItem}}" aria-expanded="{{showAddItem}}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:52px;width:100%;box-sizing:border-box;padding:0 16px;border-radius:14px;border:1.5px solid #3F7D2B;background:#EAF3E2;color:#2E5F1F;font-size:16px;font-weight:700;cursor:pointer;text-align:left"><span>+ নিজের আইটেম যোগ করুন</span><span aria-hidden="true">{{addItemCaret}}</span></button>
+<sc-if value="{{showAddItem}}" hint-placeholder-val="{{false}}">
+<div style="background:#FFFFFF;border:1px solid #E3DECF;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;flex-direction:column;gap:6px">
+<label for="itemName" style="font-size:15px;font-weight:500;color:#55605A">আইটেমের নাম</label>
+<input id="itemName" type="text" value="{{draft.name}}" onInput="{{setDraftName}}" style="box-sizing:border-box;width:100%;min-height:44px;padding:0 14px;border-radius:14px;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22;font-size:17px">
+</div>
+<div style="display:flex;gap:10px">
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px">
+<label for="itemQty" style="font-size:15px;font-weight:500;color:#55605A">পরিমাণ</label>
+<input id="itemQty" type="text" value="{{draft.qty}}" onInput="{{setDraftQty}}" style="box-sizing:border-box;width:100%;min-height:44px;padding:0 14px;border-radius:14px;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22;font-size:17px">
+</div>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px">
+<label for="itemPrice" style="font-size:15px;font-weight:500;color:#55605A">দাম (৳)</label>
+<input id="itemPrice" type="number" min="0" value="{{draft.price}}" onInput="{{setDraftPrice}}" style="box-sizing:border-box;width:100%;min-height:44px;padding:0 14px;border-radius:14px;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22;font-size:17px">
+</div>
+</div>
+<p style="margin:0;font-size:15px;font-weight:600;color:#9B2C22">{{draftError}}</p>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<button type="button" onClick="{{addExtra}}" style="min-height:44px;padding:0 20px;border-radius:999px;border:1.5px solid #3F7D2B;background:#3F7D2B;color:#FFFFFF;font-size:16px;font-weight:600;cursor:pointer">লিস্টে যোগ করুন</button>
+<button type="button" onClick="{{cancelAdd}}" style="min-height:44px;padding:0 20px;border-radius:999px;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22;font-size:16px;font-weight:600;cursor:pointer">বাতিল</button>
+</div>
+</div>
+</sc-if>
+</div>
+
+<sc-if value="{{hasExtras}}" hint-placeholder-val="{{false}}">
+<div style="display:flex;flex-direction:column">
+<h2 style="margin:0 0 4px;font-size:17px;font-weight:700;color:#2E5F1F">আমার যোগ করা আইটেম · My items</h2>
+<sc-for list="{{extraRows}}" as="x" hint-placeholder-count="2">
+<div style="display:flex;align-items:center;gap:6px;border-top:1px solid #EEEADF">
+<button type="button" onClick="{{x.toggle}}" aria-pressed="{{x.done}}" aria-label="{{x.label}}" style="flex:none;width:44px;height:44px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0"><span style="{{x.boxStyle}}">{{x.mark}}</span></button>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;padding:8px 0">
+<span style="{{x.nameStyle}}">{{x.name}}</span>
+<span style="font-size:13px;color:#55605A">{{x.qty}}</span>
+</div>
+<span style="font-size:16px;font-weight:600">{{x.cost}}</span>
+<button type="button" onClick="{{x.remove}}" aria-label="{{x.removeLabel}}" style="flex:none;width:44px;height:44px;border:none;background:transparent;color:#9B2C22;font-size:22px;cursor:pointer">×</button>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-for list="{{groceryGroups}}" as="grp" hint-placeholder-count="4">
+<div style="display:flex;flex-direction:column">
+<h2 style="margin:0 0 4px;font-size:17px;font-weight:700;color:#2E5F1F">{{grp.title}}</h2>
+<sc-for list="{{grp.items}}" as="it" hint-placeholder-count="4">
+<div style="display:flex;align-items:center;gap:6px;border-top:1px solid #EEEADF">
+<button type="button" onClick="{{it.toggle}}" aria-pressed="{{it.done}}" aria-label="{{it.label}}" style="flex:none;width:44px;height:44px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0"><span style="{{it.boxStyle}}">{{it.mark}}</span></button>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;padding:8px 0">
+<span style="{{it.nameStyle}}">{{it.name}}</span>
+<span style="font-size:13px;color:#55605A">{{it.qty}} · {{it.used}}</span>
+</div>
+<span style="font-size:16px;font-weight:600;padding-right:4px">{{it.cost}}</span>
+</div>
+</sc-for>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{showRecipes}}" hint-placeholder-val="{{false}}">
+<div style="display:flex;flex-direction:column;gap:18px">
+<div style="display:flex;flex-direction:column;gap:10px">
+<button type="button" onClick="{{toggleRecipeForm}}" aria-expanded="{{recOpen}}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:52px;width:100%;box-sizing:border-box;padding:0 16px;border-radius:14px;border:1.5px solid #3F7D2B;background:#EAF3E2;color:#2E5F1F;font-size:16px;font-weight:700;cursor:pointer;text-align:left"><span>{{recButtonText}}</span><span aria-hidden="true">{{recCaret}}</span></button>
+<sc-if value="{{recOpen}}" hint-placeholder-val="{{false}}">
+<div style="background:#FFFFFF;border:1px solid #E3DECF;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;flex-direction:column;gap:6px">
+<label for="recName" style="font-size:15px;font-weight:500;color:#55605A">রেসিপির নাম</label>
+<input id="recName" type="text" value="{{rf.n}}" onInput="{{setRecName}}" style="box-sizing:border-box;width:100%;min-height:44px;padding:0 14px;border-radius:14px;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22;font-size:17px">
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<span style="font-size:15px;font-weight:500;color:#55605A">কোন বেলার খাবার</span>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<sc-for list="{{recTypePills}}" as="p" hint-placeholder-count="3">
+<button type="button" onClick="{{p.pick}}" aria-pressed="{{p.on}}" style="{{p.style}}">{{p.label}}</button>
+</sc-for>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<sc-for list="{{recSteppers}}" as="s" hint-placeholder-count="3">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+<span style="font-size:16px;font-weight:500">{{s.label}}</span>
+<span style="display:flex;align-items:center;gap:8px">
+<button type="button" onClick="{{s.dec}}" aria-label="{{s.decLabel}}" style="width:44px;height:44px;border-radius:14px;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22;font-size:22px;line-height:1;cursor:pointer">−</button>
+<span style="min-width:84px;text-align:center;font-size:16px;font-weight:600">{{s.value}}</span>
+<button type="button" onClick="{{s.inc}}" aria-label="{{s.incLabel}}" style="width:44px;height:44px;border-radius:14px;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22;font-size:22px;line-height:1;cursor:pointer">+</button>
+</span>
+</div>
+</sc-for>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px">
+<label for="recIng" style="font-size:15px;font-weight:500;color:#55605A">উপকরণ (কমা দিয়ে লিখুন)</label>
+<input id="recIng" type="text" value="{{rf.ing}}" onInput="{{setRecIng}}" style="box-sizing:border-box;width:100%;min-height:44px;padding:0 14px;border-radius:14px;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22;font-size:17px">
+</div>
+<span style="font-size:13px;line-height:1.5;color:#55605A">খরচ ৪ জনের জন্য ধরা হয়। প্ল্যানে অন্য ডিশ (Swap) চাপলে আপনার রেসিপিও আসবে।</span>
+<p style="margin:0;font-size:15px;font-weight:600;color:#9B2C22">{{recError}}</p>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<button type="button" onClick="{{saveRecipe}}" style="min-height:44px;padding:0 20px;border-radius:999px;border:1.5px solid #3F7D2B;background:#3F7D2B;color:#FFFFFF;font-size:16px;font-weight:600;cursor:pointer">{{recSaveText}}</button>
+<button type="button" onClick="{{cancelRecipe}}" style="min-height:44px;padding:0 20px;border-radius:999px;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22;font-size:16px;font-weight:600;cursor:pointer">বাতিল</button>
+</div>
+</div>
+</sc-if>
+</div>
+
+<sc-if value="{{hasMine}}" hint-placeholder-val="{{false}}">
+<div style="display:flex;flex-direction:column;gap:8px">
+<h2 style="margin:0;font-size:17px;font-weight:700;color:#2E5F1F">আমার রেসিপি · My recipes</h2>
+<sc-for list="{{myRecipeRows}}" as="r" hint-placeholder-count="2">
+<div style="background:#FFFFFF;border:1.5px solid #3F7D2B;border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px">
+<button type="button" onClick="{{r.open}}" aria-label="{{r.openLabel}}" style="flex:1;min-width:0;min-height:44px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;text-align:left;border:none;background:transparent;padding:0;cursor:pointer;color:#1E2A22">
+<span style="font-size:16px;font-weight:600;line-height:1.35">{{r.name}}</span>
+<span style="font-size:14px;color:#55605A">{{r.slot}} · {{r.kcal}} ক্যালোরি · {{r.price}} · {{r.time}}</span>
+<span style="font-size:13px;font-weight:600;color:#2E5F1F">প্লেট দেখুন ›</span>
+</button>
+<div style="display:flex;gap:8px">
+<button type="button" onClick="{{r.edit}}" style="min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid #3F7D2B;background:#FFFFFF;color:#2E5F1F;font-size:15px;font-weight:600;cursor:pointer">এডিট</button>
+<button type="button" onClick="{{r.remove}}" aria-label="{{r.removeLabel}}" style="min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#9B2C22;font-size:15px;font-weight:600;cursor:pointer">মুছুন</button>
+</div>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<p style="margin:0;font-size:15px;line-height:1.55;color:#55605A">ক্যালোরি প্রতি জনের। দাম {{sizeText}}-এর জন্য, {{storeName}}-এর আনুমানিক হিসাবে।</p>
+<div role="group" aria-label="রেসিপি ফিল্টার" style="display:flex;gap:8px;flex-wrap:wrap">
+<sc-for list="{{recFilters}}" as="f" hint-placeholder-count="4">
+<button type="button" onClick="{{f.pick}}" aria-pressed="{{f.on}}" style="{{f.style}}">{{f.label}}</button>
+</sc-for>
+</div>
+<sc-for list="{{recipeGroups}}" as="rg" hint-placeholder-count="3">
+<div style="display:flex;flex-direction:column;gap:8px">
+<h2 style="margin:0;font-size:17px;font-weight:700;color:#2E5F1F">{{rg.title}}</h2>
+<sc-for list="{{rg.items}}" as="r" hint-placeholder-count="4">
+<div style="background:#FFFFFF;border:1px solid #E3DECF;border-radius:14px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px">
+<sc-if value="{{r.hasThumb}}" hint-placeholder-val="{{false}}"><img class="thumb" src="{{r.thumb}}" alt=""></sc-if>
+<button type="button" onClick="{{r.open}}" aria-label="{{r.openLabel}}" style="flex:1;min-width:0;min-height:44px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;text-align:left;border:none;background:transparent;padding:0;cursor:pointer;color:#1E2A22">
+<span style="font-size:16px;font-weight:600;line-height:1.35">{{r.name}}</span>
+<span style="font-size:14px;color:#55605A">{{r.kcal}} ক্যালোরি · {{r.price}}</span>
+<span style="font-size:13px;color:#55605A">{{r.time}}</span>
+<span style="font-size:13px;font-weight:600;color:#2E5F1F">প্লেট দেখুন ›</span>
+</button>
+<button type="button" onClick="{{r.toggle}}" aria-pressed="{{r.saved}}" style="{{r.style}}">{{r.label}}</button>
+</div>
+</sc-for>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{showPlan}}" hint-placeholder-val="{{false}}">
+<div style="display:flex;flex-direction:column;gap:16px">
+<sc-if value="{{showWeek}}" hint-placeholder-val="{{true}}">
+<div style="background:#FFF4DB;border:1px solid #E3DECF;border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:8px">
+<h2 style="margin:0;font-size:18px;font-weight:700;color:#5A3A00">আজকের খাবার</h2>
+<sc-for list="{{todayMeals}}" as="t" hint-placeholder-count="3">
+<button type="button" onClick="{{t.pick}}" aria-label="{{t.label}}" style="min-height:44px;display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;border:none;border-radius:14px;background:#FFFFFF;padding:8px 12px;cursor:pointer;font-family:inherit">
+<span style="font-size:14px;color:#55605A;flex:none">{{t.slot}}</span>
+<span style="font-size:16px;font-weight:600;flex:1;min-width:0">{{t.name}}</span>
+</button>
+</sc-for>
+</div>
+<div style="background:#FFFFFF;border:1px solid #E3DECF;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px">
+<span style="font-size:15px;color:#55605A">পরিবার · {{sizeText}} · দিনে গড়ে</span>
+<span style="font-size:20px;font-weight:700;line-height:1.35">প্ল্যানে {{avgPlanned}} / প্রয়োজন {{famTarget}} ক্যালোরি</span>
+<div role="progressbar" aria-label="পরিবারের দৈনিক ক্যালোরি লক্ষ্যের কত অংশ পূরণ হচ্ছে" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{avgPct}}" style="height:12px;border-radius:999px;background:#E9E4D6;overflow:hidden"><div style="{{avgBarStyle}}"></div></div>
+<p style="{{avgStatusStyle}}">{{avgStatus}}</p>
+<span style="font-size:13px;color:#55605A">প্রতি জনের একই পরিমাণ ধরে হিসাব।</span>
+</div>
+
+<div style="background:#FFFFFF;border:1px solid #E3DECF;border-radius:18px;padding:12px 14px;display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+<h2 style="margin:0;font-size:16px;font-weight:600;color:#3F4A43">সাপ্তাহিক চার্ট <span style="font-weight:500">Weekly</span></h2>
+<span style="display:flex;gap:6px"><button type="button" onClick="{{toggleCal}}" aria-expanded="{{calOpen}}" style="min-height:44px;padding:0 12px;border-radius:999px;border:1.5px solid #3F7D2B;background:#FFFFFF;color:#2E5F1F;font-size:14px;font-weight:600;cursor:pointer">ক্যালেন্ডার</button>
+<button type="button" onClick="{{toggleChart}}" aria-expanded="{{chartOpen}}" style="min-height:44px;padding:0 12px;border-radius:999px;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22;font-size:14px;font-weight:600;cursor:pointer">{{chartToggleText}}</button></span>
+</div>
+<sc-if value="{{calOpen}}" hint-placeholder-val="{{false}}">
+<div style="background:#FAF8F2;border:1px solid #E3DECF;border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+<button type="button" onClick="{{calPrev}}" aria-label="আগের মাস" style="min-height:44px;min-width:44px;border-radius:14px;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22;font-size:20px;cursor:pointer;">‹</button>
+<span style="font-size:16px;font-weight:700">{{calTitle}}</span>
+<button type="button" onClick="{{calNext}}" aria-label="পরের মাস" style="min-height:44px;min-width:44px;border-radius:14px;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22;font-size:20px;cursor:pointer;">›</button>
+</div>
+<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">
+<sc-for list="{{calHead}}" as="h" hint-placeholder-count="7"><span style="text-align:center;font-size:12px;font-weight:600;color:#55605A">{{h.h}}</span></sc-for>
+<sc-for list="{{calCells}}" as="c" hint-placeholder-count="30">
+<sc-if value="{{c.blank}}" hint-placeholder-val="{{false}}"><span></span></sc-if>
+<sc-if value="{{c.real}}" hint-placeholder-val="{{true}}"><button type="button" onClick="{{c.pick}}" aria-label="{{c.label}}" aria-pressed="{{c.on}}" style="{{c.style}}">{{c.text}}</button></sc-if>
+</sc-for>
+</div>
+<span style="font-size:13px;color:#3F4A43">{{calWeekText}}। হলুদ দাগ = সেভ করা সপ্তাহ।</span>
+<button type="button" onClick="{{calToday}}" style="min-height:44px;border-radius:14px;border:1.5px solid #3F7D2B;background:#FFFFFF;color:#2E5F1F;font-size:15px;font-weight:600;cursor:pointer">আজকের সপ্তাহ</button>
+</div>
+</sc-if>
+<sc-if value="{{chartOpen}}" hint-placeholder-val="{{false}}">
+<span style="font-size:12px;line-height:1.5;color:#55605A">কালো দাগ = পরিবারের দিনের লক্ষ্য। দিনে ট্যাপ করে তিন বেলা দেখুন।</span>
+<sc-for list="{{weekRows}}" as="w" hint-placeholder-count="7">
+<button type="button" onClick="{{w.pick}}" aria-label="{{w.label}}" style="display:flex;align-items:center;gap:8px;min-height:44px;width:100%;box-sizing:border-box;border:none;background:transparent;padding:0;cursor:pointer;color:#1E2A22;text-align:left">
+<span style="width:60px;flex:none;display:flex;flex-direction:column"><span style="font-size:13px;font-weight:600;color:#3F4A43">{{w.name}}</span><span style="font-size:12px;color:#55605A">{{w.date}}</span></span>
+<span style="flex:1;min-width:0;position:relative;height:12px;border-radius:999px;background:#EFEBDF;overflow:hidden;display:block"><span style="{{w.fillStyle}}"></span><span style="position:absolute;top:0;bottom:0;left:80%;width:2px;background:#55605A"></span></span>
+<span style="width:62px;flex:none;text-align:right;display:flex;flex-direction:column"><span style="font-size:13px;font-weight:600">{{w.value}}</span><span style="font-size:12px;color:#55605A">{{w.word}}</span></span>
+</button>
+</sc-for>
+</sc-if>
+<sc-if value="{{chartClosed}}" hint-placeholder-val="{{true}}">
+<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">
+<sc-for list="{{weekRows}}" as="w" hint-placeholder-count="7">
+<button type="button" onClick="{{w.pick}}" aria-label="{{w.label}}" style="min-width:0;min-height:44px;border-radius:14px;border:1.5px solid #D8D2C2;background:#FFFFFF;color:#1E2A22;font-size:14px;font-weight:600;cursor:pointer;padding:2px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.2">{{w.name}}<span style="font-size:12px;font-weight:500;color:#55605A">{{w.date}}</span></button>
+</sc-for>
+</div>
+</sc-if>
+</div>
+
+<button type="button" onClick="{{regen}}" style="min-height:48px;border-radius:14px;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22;font-size:16px;font-weight:600;cursor:pointer">নতুন করে সাজান · Regenerate</button>
+</sc-if>
+
+<sc-if value="{{showDay}}" hint-placeholder-val="{{false}}">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+<button type="button" onClick="{{backWeek}}" style="min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22;font-size:15px;font-weight:600;cursor:pointer">← সাপ্তাহিক চার্ট</button>
+<span style="display:flex;gap:8px">
+<button type="button" onClick="{{prevDay}}" aria-label="আগের দিন" style="width:44px;height:44px;border-radius:14px;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22;font-size:22px;line-height:1;cursor:pointer">‹</button>
+<button type="button" onClick="{{nextDay}}" aria-label="পরের দিন" style="width:44px;height:44px;border-radius:14px;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22;font-size:22px;line-height:1;cursor:pointer">›</button>
+</span>
+</div>
+
+<div style="background:#FFFFFF;border:1px solid #E3DECF;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px">
+<h2 style="margin:0;font-size:22px;font-weight:700">{{selDayName}}</h2>
+<span style="font-size:15px;color:#55605A">{{sizeText}} মিলে প্ল্যানে</span>
+<span style="font-size:20px;font-weight:700">{{selDayPlanned}} / প্রয়োজন {{famTarget}} ক্যালোরি</span>
+<div role="progressbar" aria-label="এই দিনের ক্যালোরি লক্ষ্যের কত অংশ পূরণ হচ্ছে" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{selDayPct}}" style="height:12px;border-radius:999px;background:#E9E4D6;overflow:hidden"><div style="{{selDayBarStyle}}"></div></div>
+<p style="{{selDayStatusStyle}}">{{selDayStatus}}</p>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:10px">
+<h2 style="margin:0;font-size:18px;font-weight:700">তিন বেলা <span style="font-weight:500;color:#55605A">Meals</span></h2>
+<span style="font-size:13px;color:#55605A">ডিশে ট্যাপ করলে প্লেট খুলবে।</span>
+<sc-for list="{{dayMeals}}" as="m" hint-placeholder-count="3">
+<button type="button" onClick="{{m.pick}}" aria-label="{{m.label}}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;box-sizing:border-box;text-align:left;background:#FFFFFF;border:1.5px solid #D8D2C2;border-radius:18px;padding:14px 16px;cursor:pointer;color:#1E2A22;min-height:76px">
+<sc-if value="{{m.hasThumb}}" hint-placeholder-val="{{false}}"><img class="thumb" src="{{m.thumb}}" alt=""></sc-if>
+<span style="display:flex;flex-direction:column;gap:3px;min-width:0;flex:1">
+<span style="font-size:14px;font-weight:600;color:#2E5F1F">{{m.slot}}</span>
+<span style="font-size:18px;font-weight:700;line-height:1.35">{{m.name}}</span>
+</span>
+<span style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex:none">
+<span style="font-size:18px;font-weight:700;color:#2E5F1F">{{m.kcal}}</span>
+<span style="font-size:12px;color:#55605A">ক্যালোরি/জন</span>
+<span style="font-size:13px;font-weight:600;color:#2E5F1F">প্লেট দেখুন ›</span>
+</span>
+</button>
+</sc-for>
+</div>
+</sc-if>
+</div>
+</sc-if>
+
+</div>
+
+<nav aria-label="মূল মেনু" style="display:flex;border-top:1px solid #E3DECF;background:#FFFFFF">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="5">
+<button type="button" onClick="{{t.pick}}" aria-current="{{t.on}}" style="{{t.style}}">
+<span style="font-size:14px;font-weight:700">{{t.bn}}</span>
+<span style="font-size:12px">{{t.en}}</span>
+</button>
+</sc-for>
+</nav>
+
+</div>
+</sc-if>
+
+<sc-if value="{{showPopup}}" hint-placeholder-val="{{false}}">
+<div style="position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;justify-content:flex-end">
+<button type="button" onClick="{{closePopup}}" aria-label="বন্ধ করুন" style="position:absolute;top:0;left:0;right:0;bottom:0;width:100%;height:100%;border:none;padding:0;background:rgba(20,28,22,0.55);cursor:pointer"></button>
+<div role="dialog" id="dlgPlate" tabindex="-1" onKeyDown="{{dlgKey}}" aria-modal="true" aria-label="{{selName}}" style="position:relative;max-height:94%;overflow-y:auto;box-sizing:border-box;background:#FAF8F2;border-radius:26px 26px 0 0;padding:16px 20px 24px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+<span style="font-size:15px;font-weight:600;color:#2E5F1F">{{selSlot}}</span>
+<button type="button" onClick="{{closePopup}}" aria-label="পপ-আপ বন্ধ করুন" style="width:44px;height:44px;border-radius:999px;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22;font-size:22px;line-height:1;cursor:pointer">×</button>
+</div>
+<sc-if value="{{remind}}" hint-placeholder-val="{{false}}">
+<div style="background:#FFF3D6;border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px">
+<span style="font-size:17px;font-weight:700;color:#5A3A00">{{todayLine}}</span>
+<span style="font-size:14px;line-height:1.5;color:#5A3A00">{{remindLine}}</span>
+<div style="display:flex;flex-wrap:wrap;gap:6px"><sc-for list="{{remindPills}}" as="p" hint-placeholder-count="3"><button type="button" onClick="{{p.pick}}" aria-pressed="{{p.on}}" style="{{p.style}}">{{p.label}}</button></sc-for></div>
+</div>
+</sc-if>
+<h2 style="margin:0;font-size:24px;line-height:1.3;font-weight:700">{{selName}}</h2>
+
+<div role="img" aria-label="{{plateAlt}}" style="align-self:center;position:relative;flex:none;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,#FFFFFF 0%,#FFFFFF 62%,#DCE8F6 63%,#FFFFFF 66%,#2F6DB5 67%,#2F6DB5 68.5%,#FFFFFF 70%,#EEF0F3 100%);box-shadow:0 14px 28px rgba(0,0,0,0.22)">
+<sc-if value="{{hasDishPhoto}}" hint-placeholder-val="{{false}}"><div class="dish-wrap" style="position:absolute;left:13%;top:13%;width:74%;height:74%"><div class="dish-spin" style="position:absolute;left:0;top:0;width:100%;height:100%;border-radius:50%;overflow:hidden;background:#EEE9DC;box-shadow:0 3px 8px rgba(0,0,0,0.35)"><img class="dish-img" src="{{dishPhoto}}" alt="{{dishAlt}}" style="width:100%;height:100%;object-fit:cover;display:block"><span style="position:absolute;top:0;left:0;width:100%;height:100%;border-radius:50%;box-shadow:inset 0 0 16px rgba(0,0,0,0.35)"></span></div><span class="steam s1" aria-hidden="true"></span><span class="steam s2" aria-hidden="true"></span><span class="steam s3" aria-hidden="true"></span></div></sc-if>
+<sc-if value="{{noDishPhoto}}" hint-placeholder-val="{{true}}">
+<sc-for list="{{plateItems}}" as="p" hint-placeholder-count="3">
+<div style="{{p.style}}">
+<sc-if value="{{p.is_rice}}"><svg viewBox="0 0 120 120" style="width:100%;height:100%;display:block" aria-hidden="true"><ellipse cx="60" cy="66" rx="54" ry="46" fill="#EFE9D8"/><ellipse cx="60" cy="58" rx="48" ry="40" fill="#F8F4E9"/><ellipse cx="52" cy="46" rx="30" ry="21" fill="#FFFFFF"/><g fill="#E4DBC3"><ellipse cx="36" cy="70" rx="6" ry="2.4" transform="rotate(30 36 70)"/><ellipse cx="62" cy="76" rx="6" ry="2.4" transform="rotate(-20 62 76)"/><ellipse cx="84" cy="62" rx="6" ry="2.4" transform="rotate(50 84 62)"/><ellipse cx="74" cy="42" rx="6" ry="2.4" transform="rotate(-40 74 42)"/><ellipse cx="46" cy="60" rx="6" ry="2.4" transform="rotate(10 46 60)"/><ellipse cx="90" cy="80" rx="6" ry="2.4" transform="rotate(-10 90 80)"/><ellipse cx="28" cy="52" rx="6" ry="2.4" transform="rotate(60 28 52)"/><ellipse cx="58" cy="88" rx="6" ry="2.4" transform="rotate(15 58 88)"/></g></svg></sc-if>
+<sc-if value="{{p.is_khichuri}}"><svg viewBox="0 0 120 120" style="width:100%;height:100%;display:block" aria-hidden="true"><ellipse cx="60" cy="66" rx="54" ry="46" fill="#CFA83F"/><ellipse cx="60" cy="58" rx="48" ry="40" fill="#E6C455"/><ellipse cx="50" cy="46" rx="28" ry="19" fill="#F2DB86"/><g><circle cx="36" cy="64" r="4" fill="#D9822B"/><circle cx="70" cy="70" r="4" fill="#7BA23F"/><circle cx="82" cy="52" r="3.6" fill="#D9822B"/><circle cx="56" cy="80" r="3.6" fill="#7BA23F"/><circle cx="48" cy="56" r="3" fill="#A8641C"/><circle cx="74" cy="40" r="3" fill="#A8641C"/><circle cx="92" cy="72" r="3" fill="#7BA23F"/><circle cx="28" cy="50" r="3" fill="#7BA23F"/></g></svg></sc-if>
+<sc-if value="{{p.is_ruti}}"><svg viewBox="0 0 120 120" style="width:100%;height:100%;display:block" aria-hidden="true"><circle cx="44" cy="68" r="40" fill="#C99955"/><circle cx="66" cy="58" r="40" fill="#D9AC6C"/><circle cx="58" cy="50" r="40" fill="#E6C084"/><circle cx="58" cy="50" r="40" fill="none" stroke="#C99955" stroke-width="2"/><g fill="#9A6B33"><circle cx="44" cy="40" r="4"/><circle cx="68" cy="34" r="3"/><circle cx="76" cy="58" r="4.5"/><circle cx="52" cy="66" r="3.4"/><circle cx="36" cy="58" r="2.6"/><circle cx="62" cy="52" r="2.4"/></g></svg></sc-if>
+<sc-if value="{{p.is_porota}}"><svg viewBox="0 0 120 120" style="width:100%;height:100%;display:block" aria-hidden="true"><circle cx="60" cy="62" r="54" fill="#C98A3A"/><circle cx="60" cy="58" r="52" fill="#E6B15C"/><circle cx="60" cy="58" r="40" fill="none" stroke="#C98A3A" stroke-width="3"/><circle cx="60" cy="58" r="26" fill="none" stroke="#D69C48" stroke-width="3"/><circle cx="60" cy="58" r="12" fill="#F0C57A"/><path d="M20 40 L100 76 M20 76 L100 40" stroke="#D69C48" stroke-width="2.5"/><ellipse cx="44" cy="34" rx="18" ry="7" transform="rotate(-25 44 34)" fill="#F4D391" opacity="0.8"/></svg></sc-if>
+<sc-if value="{{p.is_bread}}"><svg viewBox="0 0 120 120" style="width:100%;height:100%;display:block" aria-hidden="true"><rect x="30" y="30" width="68" height="68" rx="16" fill="#C99955" transform="rotate(10 64 64)"/><rect x="34" y="34" width="60" height="60" rx="13" fill="#F4E0B6" transform="rotate(10 64 64)"/><rect x="12" y="14" width="68" height="68" rx="16" fill="#C99955" transform="rotate(-8 46 48)"/><rect x="16" y="18" width="60" height="60" rx="13" fill="#F8E8C4" transform="rotate(-8 46 48)"/></svg></sc-if>
+<sc-if value="{{p.is_dal}}"><svg viewBox="0 0 120 120" style="width:100%;height:100%;display:block" aria-hidden="true"><circle cx="60" cy="60" r="57" fill="#B9BFC4"/><circle cx="60" cy="60" r="53" fill="#E9ECEE"/><circle cx="60" cy="60" r="46" fill="#E2AE2B"/><path d="M30 58 C42 44 58 70 72 54 S92 52 92 62" fill="none" stroke="#F3D06A" stroke-width="5" stroke-linecap="round"/><circle cx="52" cy="72" r="2.6" fill="#7A3E0B"/><circle cx="76" cy="44" r="2.2" fill="#7A3E0B"/><circle cx="44" cy="46" r="2.2" fill="#7A3E0B"/><ellipse cx="68" cy="68" rx="9" ry="2.6" transform="rotate(-30 68 68)" fill="#4E8B2E"/><circle cx="60" cy="60" r="46" fill="none" stroke="rgba(0,0,0,0.14)" stroke-width="3"/></svg></sc-if>
+<sc-if value="{{p.is_egg}}"><svg viewBox="0 0 120 120" style="width:100%;height:100%;display:block" aria-hidden="true"><path d="M22 54 C16 28 50 12 76 20 C104 28 108 62 90 84 C72 106 36 98 28 78 C24 70 24 62 22 54Z" fill="#E8C77A"/><path d="M26 54 C21 31 52 17 76 24 C100 31 103 61 87 81 C70 101 38 94 31 76 C28 68 27 61 26 54Z" fill="#FFFFFF"/><circle cx="60" cy="56" r="19" fill="#F2A900"/><ellipse cx="53" cy="49" rx="7" ry="5" transform="rotate(-30 53 49)" fill="#FFD25A"/></svg></sc-if>
+<sc-if value="{{p.is_eggcurry}}"><svg viewBox="0 0 120 120" style="width:100%;height:100%;display:block" aria-hidden="true"><circle cx="60" cy="60" r="57" fill="#B9BFC4"/><circle cx="60" cy="60" r="53" fill="#E9ECEE"/><circle cx="60" cy="60" r="46" fill="#C4561D"/><ellipse cx="46" cy="58" rx="17" ry="21" fill="#FFF8E6"/><ellipse cx="46" cy="60" rx="9" ry="11" fill="#F2B01E"/><ellipse cx="76" cy="66" rx="17" ry="21" transform="rotate(25 76 66)" fill="#FFF8E6"/><ellipse cx="76" cy="66" rx="9" ry="11" transform="rotate(25 76 66)" fill="#F2B01E"/><circle cx="60" cy="34" r="2.6" fill="#3E7F27"/><circle cx="88" cy="42" r="2.6" fill="#3E7F27"/><circle cx="34" cy="82" r="2.6" fill="#3E7F27"/><circle cx="62" cy="88" r="3" fill="#E8873A"/><circle cx="60" cy="60" r="46" fill="none" stroke="rgba(0,0,0,0.14)" stroke-width="3"/></svg></sc-if>
+<sc-if value="{{p.is_fish}}"><svg viewBox="0 0 120 120" style="width:100%;height:100%;display:block" aria-hidden="true"><circle cx="60" cy="60" r="57" fill="#B9BFC4"/><circle cx="60" cy="60" r="53" fill="#E9ECEE"/><circle cx="60" cy="60" r="46" fill="#C9651F"/><ellipse cx="58" cy="60" rx="30" ry="20" transform="rotate(-18 58 60)" fill="#E3A06B"/><ellipse cx="58" cy="60" rx="22" ry="13" transform="rotate(-18 58 60)" fill="#F1BE96"/><circle cx="58" cy="60" r="5" fill="#B5703F"/><ellipse cx="80" cy="82" rx="11" ry="2.8" transform="rotate(25 80 82)" fill="#4E8B2E"/><circle cx="36" cy="42" r="2.6" fill="#E8873A"/><circle cx="86" cy="44" r="3" fill="#E8873A"/><circle cx="60" cy="60" r="46" fill="none" stroke="rgba(0,0,0,0.14)" stroke-width="3"/></svg></sc-if>
+<sc-if value="{{p.is_chicken}}"><svg viewBox="0 0 120 120" style="width:100%;height:100%;display:block" aria-hidden="true"><circle cx="60" cy="60" r="57" fill="#B9BFC4"/><circle cx="60" cy="60" r="53" fill="#E9ECEE"/><circle cx="60" cy="60" r="46" fill="#B8531A"/><path d="M30 54 C34 38 54 38 60 48 C70 44 82 52 78 64 C74 78 52 80 40 72 C32 68 28 62 30 54Z" fill="#D58A4A"/><ellipse cx="50" cy="54" rx="11" ry="6" fill="#E8A86C"/><circle cx="84" cy="80" r="11" fill="#C77A3C"/><circle cx="84" cy="80" r="4" fill="#F1E6D3"/><circle cx="40" cy="84" r="9" fill="#C77A3C"/><circle cx="88" cy="40" r="2.6" fill="#E8873A"/><circle cx="60" cy="90" r="2.6" fill="#E8873A"/><circle cx="60" cy="60" r="46" fill="none" stroke="rgba(0,0,0,0.14)" stroke-width="3"/></svg></sc-if>
+<sc-if value="{{p.is_beef}}"><svg viewBox="0 0 120 120" style="width:100%;height:100%;display:block" aria-hidden="true"><circle cx="60" cy="60" r="57" fill="#B9BFC4"/><circle cx="60" cy="60" r="53" fill="#E9ECEE"/><circle cx="60" cy="60" r="46" fill="#5A2A12"/><rect x="28" y="34" width="26" height="22" rx="8" fill="#86431F" transform="rotate(-15 41 45)"/><rect x="58" y="30" width="26" height="22" rx="8" fill="#86431F" transform="rotate(20 71 41)"/><rect x="34" y="62" width="26" height="22" rx="8" fill="#7B3A1B" transform="rotate(12 47 73)"/><rect x="66" y="60" width="24" height="22" rx="8" fill="#86431F" transform="rotate(-20 78 71)"/><ellipse cx="38" cy="40" rx="8" ry="4" fill="#A5602F"/><ellipse cx="70" cy="36" rx="8" ry="4" fill="#A5602F"/><circle cx="56" cy="56" r="2.6" fill="#C5651C"/><circle cx="60" cy="92" r="2.6" fill="#C5651C"/><circle cx="60" cy="60" r="46" fill="none" stroke="rgba(0,0,0,0.2)" stroke-width="3"/></svg></sc-if>
+<sc-if value="{{p.is_veg}}"><svg viewBox="0 0 120 120" style="width:100%;height:100%;display:block" aria-hidden="true"><circle cx="60" cy="60" r="55" fill="#F6F3EA"/><circle cx="60" cy="60" r="55" fill="none" stroke="#DAD5C6" stroke-width="2"/><circle cx="40" cy="42" r="17" fill="#A5CE72"/><circle cx="40" cy="42" r="12" fill="#D3EAAD"/><circle cx="80" cy="46" r="17" fill="#A5CE72"/><circle cx="80" cy="46" r="12" fill="#D3EAAD"/><circle cx="46" cy="80" r="15" fill="#DC432C"/><circle cx="46" cy="80" r="9" fill="#F48A73"/><circle cx="82" cy="80" r="12" fill="none" stroke="#E3C3DC" stroke-width="5"/><ellipse cx="62" cy="62" rx="16" ry="3.2" transform="rotate(-35 62 62)" fill="#3F8A2A"/></svg></sc-if>
+<sc-if value="{{p.is_shak}}"><svg viewBox="0 0 120 120" style="width:100%;height:100%;display:block" aria-hidden="true"><circle cx="60" cy="60" r="57" fill="#B9BFC4"/><circle cx="60" cy="60" r="53" fill="#E9ECEE"/><circle cx="60" cy="60" r="46" fill="#2F6B1F"/><ellipse cx="46" cy="50" rx="20" ry="11" transform="rotate(-30 46 50)" fill="#4C8E2D"/><ellipse cx="74" cy="52" rx="20" ry="11" transform="rotate(25 74 52)" fill="#3E7F27"/><ellipse cx="56" cy="74" rx="22" ry="11" transform="rotate(8 56 74)" fill="#6BAA3E"/><ellipse cx="82" cy="76" rx="14" ry="8" transform="rotate(-20 82 76)" fill="#4C8E2D"/><circle cx="52" cy="62" r="3" fill="#F3E9C8"/><circle cx="70" cy="64" r="3" fill="#F3E9C8"/><ellipse cx="84" cy="44" rx="8" ry="2.4" transform="rotate(30 84 44)" fill="#B3261E"/><circle cx="60" cy="60" r="46" fill="none" stroke="rgba(0,0,0,0.18)" stroke-width="3"/></svg></sc-if>
+<sc-if value="{{p.is_alu}}"><svg viewBox="0 0 120 120" style="width:100%;height:100%;display:block" aria-hidden="true"><circle cx="60" cy="60" r="55" fill="#F6F3EA"/><circle cx="60" cy="60" r="55" fill="none" stroke="#DAD5C6" stroke-width="2"/><g fill="#E7B84A"><rect x="24" y="30" width="46" height="13" rx="6" transform="rotate(-20 47 36)"/><rect x="40" y="46" width="46" height="13" rx="6" transform="rotate(12 63 52)"/><rect x="26" y="64" width="46" height="13" rx="6" transform="rotate(-6 49 70)"/><rect x="48" y="78" width="46" height="13" rx="6" transform="rotate(-28 71 84)"/><rect x="56" y="26" width="40" height="13" rx="6" transform="rotate(30 76 32)"/></g><g fill="#C9962E"><circle cx="38" cy="32" r="2.4"/><circle cx="70" cy="54" r="2.4"/><circle cx="44" cy="70" r="2.4"/><circle cx="78" cy="80" r="2.4"/></g><ellipse cx="86" cy="62" rx="9" ry="2.6" transform="rotate(-30 86 62)" fill="#4E8B2E"/></svg></sc-if>
+<sc-if value="{{p.is_begun}}"><svg viewBox="0 0 120 120" style="width:100%;height:100%;display:block" aria-hidden="true"><circle cx="60" cy="60" r="55" fill="#F6F3EA"/><circle cx="60" cy="60" r="55" fill="none" stroke="#DAD5C6" stroke-width="2"/><ellipse cx="46" cy="50" rx="30" ry="22" transform="rotate(-20 46 50)" fill="#4A2A5A"/><ellipse cx="46" cy="50" rx="25" ry="17" transform="rotate(-20 46 50)" fill="#C99B4A"/><ellipse cx="76" cy="76" rx="30" ry="22" transform="rotate(15 76 76)" fill="#4A2A5A"/><ellipse cx="76" cy="76" rx="25" ry="17" transform="rotate(15 76 76)" fill="#C99B4A"/><circle cx="40" cy="46" r="2.4" fill="#7A5420"/><circle cx="80" cy="72" r="2.4" fill="#7A5420"/></svg></sc-if>
+<sc-if value="{{p.is_kumra}}"><svg viewBox="0 0 120 120" style="width:100%;height:100%;display:block" aria-hidden="true"><circle cx="60" cy="60" r="57" fill="#B9BFC4"/><circle cx="60" cy="60" r="53" fill="#E9ECEE"/><circle cx="60" cy="60" r="46" fill="#F0B04A"/><rect x="28" y="36" width="28" height="24" rx="7" fill="#E8821F" transform="rotate(-15 42 48)"/><rect x="60" y="32" width="28" height="24" rx="7" fill="#E8821F" transform="rotate(20 74 44)"/><rect x="32" y="64" width="28" height="24" rx="7" fill="#E8821F" transform="rotate(10 46 76)"/><rect x="64" y="62" width="26" height="24" rx="7" fill="#E8821F" transform="rotate(-20 77 74)"/><ellipse cx="40" cy="42" rx="8" ry="4" fill="#F5A94F"/><ellipse cx="72" cy="38" rx="8" ry="4" fill="#F5A94F"/><circle cx="60" cy="60" r="46" fill="none" stroke="rgba(0,0,0,0.14)" stroke-width="3"/></svg></sc-if>
+<sc-if value="{{p.is_potol}}"><svg viewBox="0 0 120 120" style="width:100%;height:100%;display:block" aria-hidden="true"><circle cx="60" cy="60" r="57" fill="#B9BFC4"/><circle cx="60" cy="60" r="53" fill="#E9ECEE"/><circle cx="60" cy="60" r="46" fill="#D8A53F"/><ellipse cx="44" cy="46" rx="20" ry="11" transform="rotate(-25 44 46)" fill="#7DAD52"/><path d="M28 50 L58 38 M30 44 L60 32" stroke="#C8E0A8" stroke-width="2"/><ellipse cx="76" cy="56" rx="20" ry="11" transform="rotate(20 76 56)" fill="#7DAD52"/><path d="M60 52 L92 62 M62 58 L90 68" stroke="#C8E0A8" stroke-width="2"/><ellipse cx="54" cy="78" rx="20" ry="11" transform="rotate(-8 54 78)" fill="#7DAD52"/><rect x="74" y="74" width="16" height="14" rx="4" fill="#EFD58A"/><circle cx="60" cy="60" r="46" fill="none" stroke="rgba(0,0,0,0.14)" stroke-width="3"/></svg></sc-if>
+<sc-if value="{{p.is_lau}}"><svg viewBox="0 0 120 120" style="width:100%;height:100%;display:block" aria-hidden="true"><circle cx="60" cy="60" r="57" fill="#B9BFC4"/><circle cx="60" cy="60" r="53" fill="#E9ECEE"/><circle cx="60" cy="60" r="46" fill="#E6C76F"/><rect x="28" y="38" width="22" height="20" rx="6" fill="#CFE3A8" transform="rotate(-12 39 48)"/><rect x="56" y="30" width="22" height="20" rx="6" fill="#CFE3A8" transform="rotate(18 67 40)"/><rect x="34" y="64" width="22" height="20" rx="6" fill="#BFD896" transform="rotate(14 45 74)"/><rect x="62" y="60" width="22" height="20" rx="6" fill="#CFE3A8" transform="rotate(-18 73 70)"/><rect x="82" y="46" width="16" height="16" rx="5" fill="#BFD896" transform="rotate(25 90 54)"/><ellipse cx="60" cy="90" rx="9" ry="2.6" fill="#4E8B2E"/><circle cx="60" cy="60" r="46" fill="none" stroke="rgba(0,0,0,0.14)" stroke-width="3"/></svg></sc-if>
+<sc-if value="{{p.is_muri}}"><svg viewBox="0 0 120 120" style="width:100%;height:100%;display:block" aria-hidden="true"><circle cx="60" cy="60" r="57" fill="#B9BFC4"/><circle cx="60" cy="60" r="53" fill="#E9ECEE"/><circle cx="60" cy="60" r="46" fill="#EFE1B8"/><g fill="#FBF1D6" stroke="#E2CF9B" stroke-width="1.5"><circle cx="40" cy="44" r="8"/><circle cx="60" cy="38" r="7"/><circle cx="80" cy="46" r="8"/><circle cx="30" cy="62" r="7"/><circle cx="52" cy="58" r="9"/><circle cx="74" cy="64" r="8"/><circle cx="92" cy="62" r="6"/><circle cx="40" cy="80" r="8"/><circle cx="62" cy="82" r="8"/><circle cx="82" cy="82" r="7"/></g><circle cx="48" cy="70" r="3" fill="#C9792A"/><circle cx="68" cy="50" r="3" fill="#C9792A"/><circle cx="60" cy="60" r="46" fill="none" stroke="rgba(0,0,0,0.12)" stroke-width="3"/></svg></sc-if>
+<sc-if value="{{p.is_milk}}"><svg viewBox="0 0 120 120" style="width:100%;height:100%;display:block" aria-hidden="true"><circle cx="60" cy="60" r="52" fill="#D3DEE6"/><circle cx="60" cy="60" r="45" fill="#FDFDFD"/><circle cx="60" cy="60" r="45" fill="none" stroke="#E1E6EA" stroke-width="3"/><ellipse cx="46" cy="44" rx="15" ry="7" transform="rotate(-30 46 44)" fill="#FFFFFF"/><circle cx="60" cy="60" r="30" fill="none" stroke="#EEF1F3" stroke-width="2"/></svg></sc-if>
+<sc-if value="{{p.is_curry}}"><svg viewBox="0 0 120 120" style="width:100%;height:100%;display:block" aria-hidden="true"><circle cx="60" cy="60" r="57" fill="#B9BFC4"/><circle cx="60" cy="60" r="53" fill="#E9ECEE"/><circle cx="60" cy="60" r="46" fill="#D07A2A"/><circle cx="46" cy="50" r="12" fill="#B85A1A"/><circle cx="74" cy="52" r="11" fill="#B85A1A"/><circle cx="58" cy="76" r="12" fill="#A94F14"/><circle cx="40" cy="74" r="3" fill="#E8A14A"/><circle cx="84" cy="74" r="3" fill="#E8A14A"/><circle cx="60" cy="60" r="46" fill="none" stroke="rgba(0,0,0,0.14)" stroke-width="3"/></svg></sc-if>
+</div>
+</sc-for>
+</sc-if>
+</div>
+
+<div style="display:flex;flex-direction:column">
+<sc-for list="{{plateItems}}" as="p" hint-placeholder-count="3">
+<div style="display:flex;align-items:center;gap:10px;border-top:1px solid #EEEADF;padding:8px 0">
+<span style="{{p.swStyle}}"></span>
+<span style="flex:1;min-width:0;font-size:16px;font-weight:500">{{p.label}}</span>
+<span style="font-size:16px;font-weight:700">{{p.kcal}} ক্যালোরি</span>
+</div>
+</sc-for>
+</div>
+
+<span style="font-size:15px;line-height:1.55;color:#55605A">{{selMeta}}</span>
+<div style="display:flex;flex-direction:column;gap:4px">
+<span style="font-size:16px;font-weight:700">{{ingTitle}}</span>
+<sc-for list="{{ingRows}}" as="g" hint-placeholder-count="4">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px solid #EEEADF;padding:6px 0"><span style="font-size:15px">{{g.name}}</span><span style="font-size:15px;font-weight:700">{{g.qty}}</span></div>
+</sc-for>
+<sc-if value="{{customIng}}" hint-placeholder-val="{{false}}"><span style="font-size:15px;line-height:1.55">{{selIngredients}}</span></sc-if>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:10px;border-top:1px solid #EEEADF;padding-top:12px">
+<span style="font-size:16px;font-weight:700">আপনার তোলা ছবি</span>
+<sc-if value="{{hasOwn}}" hint-placeholder-val="{{false}}"><span style="font-size:14px;color:#55605A">আপনার ছবি প্লেটে সাজানো আছে। ছবি সরালে আঁকা প্লেট ফিরে আসবে।</span></sc-if>
+<sc-if value="{{noOwn}}" hint-placeholder-val="{{true}}"><span style="font-size:14px;color:#55605A">রান্না করে ছবি তুলুন বা গ্যালারি থেকে আপলোড করুন। ছবিটি প্লেটের ভেতরে গোল করে বসবে।</span></sc-if>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<label class="pk" style="position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid #3F7D2B;background:#FFFFFF;color:#2E5F1F;font-size:15px;font-weight:600;cursor:pointer;box-sizing:border-box;overflow:hidden"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg> ক্যামেরা<input type="file" accept="image/*" capture="environment" aria-label="ক্যামেরা দিয়ে ছবি তুলুন" onChange="{{dishCam}}" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:0"></label>
+<label class="pk" style="position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid #3F7D2B;background:#FFFFFF;color:#2E5F1F;font-size:15px;font-weight:600;cursor:pointer;box-sizing:border-box;overflow:hidden"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M4 18l5-5 4 4 3-3 4 4"/></svg> গ্যালারি<input type="file" accept="image/*" aria-label="গ্যালারি থেকে ছবি আপলোড করুন" onChange="{{dishGal}}" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:0"></label>
+<sc-if value="{{hasOwn}}" hint-placeholder-val="{{false}}"><button type="button" onClick="{{dishRemove}}" style="min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#9B2C22;font-size:15px;font-weight:600;cursor:pointer">ছবি সরান</button></sc-if>
+</div>
+</div>
+
+<sc-if value="{{recMode}}" hint-placeholder-val="{{false}}">
+<div style="display:flex;flex-direction:column;gap:10px;border-top:1px solid #EEEADF;padding-top:12px">
+<span style="font-size:16px;font-weight:700">প্ল্যানে যোগ করুন</span>
+<span style="font-size:14px;color:#55605A">কোন বেলায় খাবেন?</span>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<sc-for list="{{addSlotPills}}" as="p" hint-placeholder-count="3"><button type="button" onClick="{{p.pick}}" aria-pressed="{{p.on}}" style="{{p.style}}">{{p.label}}</button></sc-for>
+</div>
+<span style="font-size:14px;color:#55605A">কোন দিন?</span>
+<div style="display:flex;flex-wrap:wrap;gap:6px">
+<sc-for list="{{addDayPills}}" as="p" hint-placeholder-count="7"><button type="button" onClick="{{p.pick}}" aria-pressed="{{p.on}}" style="{{p.style}}">{{p.label}}</button></sc-for>
+</div>
+<button type="button" onClick="{{addToPlan}}" style="min-height:48px;padding:0 16px;border-radius:14px;border:none;background:#3F7D2B;color:#FFFFFF;font-size:16px;font-weight:700;cursor:pointer">{{addToPlanText}}</button>
+</div>
+</sc-if>
+
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<sc-if value="{{planMode}}" hint-placeholder-val="{{true}}"><button type="button" onClick="{{swap}}" style="min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid #3F7D2B;background:#3F7D2B;color:#FFFFFF;font-size:15px;font-weight:600;cursor:pointer">অন্য ডিশ · Swap</button></sc-if>
+<button type="button" onClick="{{selSave}}" aria-pressed="{{selSaved}}" style="{{selSaveStyle}}">{{selSaveLabel}}</button>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{showMemPopup}}" hint-placeholder-val="{{false}}">
+<div style="position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;justify-content:flex-end">
+<button type="button" onClick="{{closeMem}}" aria-label="বন্ধ করুন" style="position:absolute;top:0;left:0;right:0;bottom:0;width:100%;height:100%;border:none;padding:0;background:rgba(20,28,22,0.6);cursor:pointer"></button>
+<div role="dialog" id="dlgMember" tabindex="-1" onKeyDown="{{dlgKey}}" aria-modal="true" aria-label="{{mp.name}}" style="position:relative;max-height:94%;overflow-y:auto;box-sizing:border-box;background:#FAF8F2;border-radius:26px 26px 0 0;padding:16px 20px 24px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+<span style="font-size:15px;font-weight:600;color:#2E5F1F">ফ্যামিলি সদস্য</span>
+<button type="button" onClick="{{closeMem}}" aria-label="পপ-আপ বন্ধ করুন" style="width:44px;height:44px;border-radius:999px;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22;font-size:22px;line-height:1;cursor:pointer">×</button>
+</div>
+<div style="position:relative;width:100%;height:360px;border-radius:26px;overflow:hidden;background:#3F7D2B;display:flex;align-items:center;justify-content:center">
+<sc-if value="{{mp.hasPhoto}}" hint-placeholder-val="{{false}}"><img src="{{mp.photo}}" alt="{{mp.name}}-এর ছবি" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block"></sc-if>
+<sc-if value="{{mp.noPhoto}}" hint-placeholder-val="{{true}}"><span aria-hidden="true" style="font-size:120px;font-weight:700;color:#EAF3E2;line-height:1">{{mp.initial}}</span></sc-if>
+<div style="position:absolute;left:10px;right:10px;bottom:10px;box-sizing:border-box;padding:12px 14px;border-radius:14px;background:rgba(15,24,18,0.55);color:#FFFFFF;display:flex;flex-direction:column;gap:4px">
+<span style="font-size:24px;font-weight:700;line-height:1.25">{{mp.name}}</span>
+<span style="font-size:16px;font-weight:500">বয়স {{mp.age}} · ওজন {{mp.w}} · উচ্চতা {{mp.h}}</span>
+<span style="font-size:18px;font-weight:700">{{mp.target}} ক্যালোরি / দিন</span>
+</div>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<label class="pk" style="position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid #3F7D2B;background:#FFFFFF;color:#2E5F1F;font-size:15px;font-weight:600;cursor:pointer;box-sizing:border-box;overflow:hidden"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg> ক্যামেরা<input type="file" accept="image/*" capture="environment" aria-label="ক্যামেরা দিয়ে ছবি তুলুন" onChange="{{mpCam}}" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:0"></label>
+<label class="pk" style="position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid #3F7D2B;background:#FFFFFF;color:#2E5F1F;font-size:15px;font-weight:600;cursor:pointer;box-sizing:border-box;overflow:hidden"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M4 18l5-5 4 4 3-3 4 4"/></svg> গ্যালারি<input type="file" accept="image/*" aria-label="গ্যালারি থেকে ছবি আপলোড করুন" onChange="{{mpGal}}" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:0"></label>
+<sc-if value="{{mp.hasPhoto}}" hint-placeholder-val="{{false}}"><button type="button" onClick="{{mp.remove}}" style="min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid #C9C3B3;background:#FFFFFF;color:#9B2C22;font-size:15px;font-weight:600;cursor:pointer">ছবি সরান</button></sc-if>
+</div>
+</div>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+const ING = {
+  chal:{n:'চাল',c:'pantry',u:'কেজি',p:70,pk:false},
+  atta:{n:'আটা',c:'pantry',u:'কেজি',p:60,pk:false},
+  dal:{n:'মসুর ডাল',c:'pantry',u:'কেজি',p:140,pk:false},
+  tel:{n:'সয়াবিন তেল',c:'pantry',u:'লিটার',p:190,pk:false},
+  moshla:{n:'গুঁড়া মসলা',c:'pantry',u:'প্যাকেট',p:35,pk:true},
+  muri:{n:'মুড়ি',c:'pantry',u:'কেজি',p:90,pk:false},
+  paurti:{n:'পাউরুটি',c:'pantry',u:'প্যাকেট',p:60,pk:true},
+  alu:{n:'আলু',c:'veg',u:'কেজি',p:50,pk:false},
+  piyaj:{n:'পেঁয়াজ',c:'veg',u:'কেজি',p:90,pk:false},
+  begun:{n:'বেগুন',c:'veg',u:'কেজি',p:80,pk:false},
+  lau:{n:'লাউ',c:'veg',u:'কেজি',p:40,pk:false},
+  kumra:{n:'মিষ্টি কুমড়া',c:'veg',u:'কেজি',p:50,pk:false},
+  tomato:{n:'টমেটো',c:'veg',u:'কেজি',p:100,pk:false},
+  potol:{n:'পটল',c:'veg',u:'কেজি',p:70,pk:false},
+  shak:{n:'পালং শাক',c:'veg',u:'আঁটি',p:20,pk:true},
+  dim:{n:'ডিম',c:'dairy',u:'ডজন',p:150,pk:false},
+  dudh:{n:'দুধ',c:'dairy',u:'লিটার',p:100,pk:false},
+  murgi:{n:'ব্রয়লার মুরগি',c:'meat',u:'কেজি',p:200,pk:false},
+  goru:{n:'গরুর মাংস',c:'meat',u:'কেজি',p:800,pk:false},
+  rui:{n:'রুই মাছ',c:'meat',u:'কেজি',p:350,pk:false},
+  tilapia:{n:'তেলাপিয়া মাছ',c:'meat',u:'কেজি',p:220,pk:false},
+  ilish:{n:'ইলিশ মাছ',c:'meat',u:'কেজি',p:1500,pk:false},
+  chingri:{n:'চিংড়ি',c:'meat',u:'কেজি',p:700,pk:false},
+  shutki:{n:'শুঁটকি',c:'meat',u:'কেজি',p:600,pk:false},
+  doi:{n:'দই',c:'dairy',u:'কেজি',p:180,pk:false},
+  chola:{n:'ছোলা',c:'pantry',u:'কেজি',p:120,pk:false},
+  noodles:{n:'নুডলস',c:'pantry',u:'প্যাকেট',p:50,pk:true},
+  pasta:{n:'পাস্তা',c:'pantry',u:'কেজি',p:200,pk:false}
+};
+const CATS = [['veg','সবজি · Produce'],['meat','মাংস ও মাছ · Meat & Fish'],['dairy','ডিম ও দুধ · Dairy & Eggs'],['pantry','মুদি · Pantry'],['mine','আমার রেসিপি · My recipes']];
+const RECIPES = [
+  {id:'r1',n:'পরোটা ও ডিম ভাজি',t:'b',m:25,k:520,ing:[['atta',0.4],['dim',0.33],['tel',0.1],['piyaj',0.1],['moshla',0.3]]},
+  {id:'r2',n:'মুড়ি ও দুধ',t:'b',m:5,k:300,ing:[['muri',0.2],['dudh',0.5]]},
+  {id:'r3',n:'আটার রুটি ও আলু ভাজি',t:'b',m:25,k:480,ing:[['atta',0.4],['alu',0.4],['tel',0.08],['piyaj',0.1],['moshla',0.3]]},
+  {id:'r4',n:'পাউরুটি ও ডিম টোস্ট',t:'b',m:10,k:420,ing:[['paurti',1],['dim',0.33],['tel',0.05],['piyaj',0.05]]},
+  {id:'r5',n:'ভাত, ডাল ও আলু ভর্তা',t:'l',m:35,k:780,ing:[['chal',0.6],['dal',0.25],['alu',0.4],['piyaj',0.1],['tel',0.05]]},
+  {id:'r6',n:'ভাত ও রুই মাছের ঝোল',t:'l',m:45,k:820,ing:[['chal',0.6],['rui',0.6],['alu',0.3],['piyaj',0.15],['tel',0.1],['moshla',0.5]]},
+  {id:'r7',n:'খিচুড়ি ও ডিম ভুনা',t:'l',m:40,k:850,ing:[['chal',0.4],['dal',0.3],['dim',0.33],['tel',0.1],['piyaj',0.15],['moshla',0.5]]},
+  {id:'r8',n:'ভাত ও মুরগির ঝোল',t:'l',m:50,k:880,ing:[['chal',0.6],['murgi',0.8],['alu',0.3],['piyaj',0.15],['tel',0.1],['moshla',0.5]]},
+  {id:'r9',n:'ভাত, লাউ ঘণ্ট ও ডাল',t:'l',m:40,k:740,ing:[['chal',0.6],['lau',0.8],['dal',0.2],['piyaj',0.1],['moshla',0.3],['tel',0.05]]},
+  {id:'r10',n:'ভাত, তেলাপিয়া ও পালং শাক',t:'l',m:45,k:800,ing:[['chal',0.6],['tilapia',0.6],['shak',2],['piyaj',0.1],['moshla',0.5],['tel',0.1]]},
+  {id:'r11',n:'রুটি ও গরুর মাংস ভুনা',t:'d',m:75,k:820,ing:[['atta',0.5],['goru',0.6],['piyaj',0.25],['moshla',1],['tel',0.15]]},
+  {id:'r12',n:'ভাত ও ডিমের ঝোল',t:'d',m:30,k:780,ing:[['chal',0.5],['dim',0.5],['tomato',0.3],['alu',0.3],['piyaj',0.1],['tel',0.08]]},
+  {id:'r13',n:'রুটি ও মুরগির কারি',t:'d',m:45,k:700,ing:[['atta',0.5],['murgi',0.7],['piyaj',0.15],['tomato',0.2],['moshla',0.5],['tel',0.1]]},
+  {id:'r14',n:'ভাত, বেগুন ভাজি ও ডাল',t:'d',m:30,k:760,ing:[['chal',0.5],['begun',0.5],['dal',0.25],['tel',0.15],['piyaj',0.1]]},
+  {id:'r15',n:'রুটি ও পটল-আলুর তরকারি',t:'d',m:35,k:620,ing:[['atta',0.5],['potol',0.6],['alu',0.3],['moshla',0.3],['tel',0.1]]},
+  {id:'r16',n:'ভাত, মিষ্টি কুমড়া ও ডাল',t:'d',m:35,k:740,ing:[['chal',0.5],['kumra',0.6],['dal',0.25],['tomato',0.15],['piyaj',0.1],['tel',0.08]]},
+  {id:'x01',n:'ভুনা খিচুড়ি ও মাংস ভুনা',t:'l',m:60,k:900,ing:[['chal', 0.35], ['dal', 0.25], ['goru', 0.4], ['piyaj', 0.2], ['tel', 0.12], ['moshla', 0.8]]},
+  {id:'x02',n:'ভাত ও দুই পদ কারি',t:'d',m:45,k:780,ing:[['chal', 0.5], ['murgi', 0.4], ['alu', 0.3], ['piyaj', 0.15], ['tel', 0.1], ['moshla', 0.6]]},
+  {id:'x03',n:'ভাত ও মিক্স সবজি ভাজি',t:'l',m:35,k:700,ing:[['chal', 0.6], ['alu', 0.2], ['begun', 0.2], ['potol', 0.2], ['tel', 0.1], ['piyaj', 0.1]]},
+  {id:'x04',n:'পোলাও, মাছ ও ডিমের ভোজ',t:'l',m:70,k:950,ing:[['chal', 0.5], ['rui', 0.4], ['dim', 0.33], ['piyaj', 0.2], ['tel', 0.15], ['moshla', 0.8]]},
+  {id:'x05',n:'নান, ফ্রাইড রাইস ও মাংসের কারি',t:'d',m:60,k:920,ing:[['atta', 0.3], ['chal', 0.3], ['murgi', 0.5], ['piyaj', 0.2], ['tel', 0.15], ['moshla', 0.8]]},
+  {id:'x06',n:'ফ্রাইড রাইস ও চিকেন ফ্রাই',t:'d',m:45,k:880,ing:[['chal', 0.5], ['murgi', 0.5], ['dim', 0.2], ['tel', 0.2], ['piyaj', 0.15], ['moshla', 0.5]]},
+  {id:'x07',n:'মাংসের ঝোল কারি',t:'l',m:60,k:850,ing:[['chal', 0.5], ['goru', 0.4], ['alu', 0.2], ['piyaj', 0.2], ['tel', 0.12], ['moshla', 0.8]]},
+  {id:'x08',n:'চিংড়ি ও সবজির তরকারি',t:'l',m:40,k:720,ing:[['chal', 0.5], ['chingri', 0.35], ['lau', 0.3], ['piyaj', 0.15], ['tel', 0.1], ['moshla', 0.5]]},
+  {id:'x09',n:'পোলাও ও রোস্ট',t:'l',m:80,k:960,ing:[['chal', 0.5], ['murgi', 0.6], ['dudh', 0.1], ['piyaj', 0.25], ['tel', 0.15], ['moshla', 0.8]]},
+  {id:'x10',n:'আলু দিয়ে মুরগির ঝোল',t:'l',m:50,k:830,ing:[['chal', 0.5], ['murgi', 0.6], ['alu', 0.4], ['piyaj', 0.15], ['tel', 0.1], ['moshla', 0.5]]},
+  {id:'x11',n:'ডিম ও সবজি ভাত',t:'b',m:25,k:480,ing:[['chal', 0.3], ['dim', 0.33], ['alu', 0.1], ['tel', 0.06], ['piyaj', 0.1]]},
+  {id:'x12',n:'ভাত, শাক ও ভাজা',t:'l',m:35,k:720,ing:[['chal', 0.6], ['shak', 2], ['begun', 0.3], ['tel', 0.12], ['piyaj', 0.1]]},
+  {id:'x13',n:'ভাত, শাক-মুরগি ও দই',t:'l',m:50,k:820,ing:[['chal', 0.5], ['murgi', 0.5], ['shak', 2], ['doi', 0.1], ['tel', 0.1], ['moshla', 0.5]]},
+  {id:'x14',n:'পরোটা ও চিলি চিকেন',t:'b',m:40,k:600,ing:[['atta', 0.35], ['murgi', 0.3], ['piyaj', 0.15], ['tel', 0.15], ['moshla', 0.5]]},
+  {id:'x15',n:'পরোটা ও কষা মাংস',t:'b',m:70,k:620,ing:[['atta', 0.35], ['goru', 0.3], ['piyaj', 0.2], ['tel', 0.15], ['moshla', 0.8]]},
+  {id:'x16',n:'হেলদি সালাদ থালা',t:'b',m:15,k:380,ing:[['tomato', 0.2], ['piyaj', 0.1], ['dim', 0.33], ['chola', 0.1]]},
+  {id:'x17',n:'ভাত, মুরগির রোস্ট ও ভর্তা',t:'l',m:60,k:880,ing:[['chal', 0.5], ['murgi', 0.5], ['alu', 0.3], ['piyaj', 0.2], ['tel', 0.12], ['moshla', 0.6]]},
+  {id:'x18',n:'ভাত, ডিম ও সবজি',t:'b',m:25,k:500,ing:[['chal', 0.3], ['dim', 0.33], ['alu', 0.15], ['tel', 0.06]]},
+  {id:'x19',n:'ক্রিমি মুরগির স্যুপ',t:'d',m:35,k:420,ing:[['murgi', 0.3], ['dudh', 0.2], ['alu', 0.1], ['piyaj', 0.1]]},
+  {id:'x20',n:'ভুনা মাংস ও ভাত',t:'d',m:70,k:900,ing:[['chal', 0.5], ['goru', 0.45], ['piyaj', 0.2], ['tel', 0.12], ['moshla', 0.8]]},
+  {id:'x21',n:'ঐতিহ্যবাহী থালি',t:'d',m:80,k:950,ing:[['chal', 0.5], ['dal', 0.15], ['rui', 0.3], ['begun', 0.2], ['tel', 0.12], ['piyaj', 0.15]]},
+  {id:'x22',n:'ভাত, মাংসের ঝোল ও সালাদ',t:'l',m:60,k:860,ing:[['chal', 0.5], ['goru', 0.4], ['piyaj', 0.15], ['tel', 0.1], ['moshla', 0.7]]},
+  {id:'x23',n:'কাচ্চি বিরিয়ানি',t:'l',m:120,k:1000,ing:[['chal', 0.5], ['goru', 0.45], ['alu', 0.2], ['dudh', 0.1], ['piyaj', 0.25], ['tel', 0.15], ['moshla', 1]]},
+  {id:'x24',n:'লতি শুঁটকি ও আলু ভুনা',t:'l',m:50,k:740,ing:[['chal', 0.6], ['shutki', 0.1], ['alu', 0.3], ['piyaj', 0.15], ['tel', 0.12], ['moshla', 0.5]]},
+  {id:'x25',n:'মাছের ঝোল (আলু-টমেটো)',t:'l',m:40,k:780,ing:[['chal', 0.6], ['rui', 0.5], ['alu', 0.3], ['tomato', 0.2], ['piyaj', 0.1], ['tel', 0.1]]},
+  {id:'x26',n:'ভাত ও রসুনের আচার',t:'l',m:20,k:620,ing:[['chal', 0.6], ['dal', 0.2], ['tel', 0.05]]},
+  {id:'x27',n:'নান ও গ্রিলড চিকেন কাবাব',t:'d',m:45,k:800,ing:[['atta', 0.35], ['murgi', 0.5], ['doi', 0.1], ['piyaj', 0.15], ['tel', 0.1], ['moshla', 0.7]]},
+  {id:'x28',n:'ভাত, মাছ ভাজা, বেগুন ও ডিম ভাজা',t:'l',m:40,k:860,ing:[['chal', 0.5], ['rui', 0.4], ['begun', 0.25], ['dim', 0.33], ['tel', 0.2], ['moshla', 0.4]]},
+  {id:'x29',n:'কলাপাতায় বাঙালি ভোজ',t:'l',m:90,k:980,ing:[['chal', 0.5], ['rui', 0.35], ['dal', 0.15], ['begun', 0.2], ['shak', 1], ['tel', 0.15], ['moshla', 0.6]]},
+  {id:'x30',n:'ইলিশ ও ভুনা খিচুড়ি',t:'l',m:70,k:980,ing:[['chal', 0.35], ['dal', 0.25], ['ilish', 0.35], ['piyaj', 0.15], ['tel', 0.15], ['moshla', 0.7]]},
+  {id:'x31',n:'রেড সসে পাস্তা',t:'d',m:25,k:700,ing:[['pasta', 0.15], ['tomato', 0.25], ['piyaj', 0.1], ['tel', 0.1]]},
+  {id:'x32',n:'গরুর কালা ভুনা',t:'d',m:90,k:920,ing:[['chal', 0.5], ['goru', 0.5], ['piyaj', 0.3], ['tel', 0.15], ['moshla', 1]]},
+  {id:'x33',n:'ভাজা আস্ত মাছ ও পটেটো ওয়েজেস',t:'d',m:40,k:780,ing:[['tilapia', 0.5], ['alu', 0.4], ['tel', 0.25], ['moshla', 0.4]]},
+  {id:'x34',n:'চাউমিন',t:'d',m:30,k:640,ing:[['noodles', 0.15], ['murgi', 0.2], ['piyaj', 0.1], ['tel', 0.1], ['dim', 0.15]]},
+  {id:'x35',n:'স্প্যাগেটি পাস্তা',t:'d',m:30,k:680,ing:[['pasta', 0.15], ['tomato', 0.25], ['piyaj', 0.1], ['tel', 0.1]]},
+  {id:'x36',n:'টোফু ও সবজি সালাদ বোল',t:'b',m:15,k:400,ing:[['tomato', 0.2], ['piyaj', 0.1], ['dim', 0.33], ['chola', 0.1]]},
+  {id:'x37',n:'ডায়েট সালাদ ও বাদাম',t:'b',m:10,k:350,ing:[['tomato', 0.2], ['piyaj', 0.1], ['chola', 0.1]]},
+  {id:'x38',n:'নান, ছোলা ও দই',t:'b',m:30,k:560,ing:[['atta', 0.35], ['chola', 0.15], ['doi', 0.15], ['tel', 0.08]]},
+  {id:'x39',n:'কষা মাংস ও সবজি',t:'d',m:70,k:760,ing:[['atta', 0.4], ['goru', 0.4], ['begun', 0.15], ['piyaj', 0.2], ['tel', 0.12], ['moshla', 0.8]]},
+  {id:'x40',n:'কাবাব, রুটি ও সালাদ',t:'d',m:45,k:780,ing:[['atta', 0.4], ['murgi', 0.5], ['piyaj', 0.15], ['tel', 0.1], ['moshla', 0.7]]},
+  {id:'x41',n:'ভাত ও গরুর ঝোল',t:'l',m:60,k:880,ing:[['chal', 0.5], ['goru', 0.45], ['alu', 0.2], ['piyaj', 0.2], ['tel', 0.12], ['moshla', 0.8]]},
+  {id:'x42',n:'মোরগ পোলাও ও গ্রিলড চিকেন',t:'l',m:80,k:980,ing:[['chal', 0.5], ['murgi', 0.6], ['dudh', 0.1], ['piyaj', 0.2], ['tel', 0.15], ['moshla', 0.8]]},
+  {id:'x43',n:'বড় ভোজের আয়োজন',t:'d',m:100,k:1000,ing:[['chal', 0.5], ['goru', 0.3], ['murgi', 0.3], ['dal', 0.1], ['piyaj', 0.25], ['tel', 0.15], ['moshla', 1]]},
+  {id:'x44',n:'বিফ ভুনা বিরিয়ানি',t:'l',m:110,k:1000,ing:[['chal', 0.5], ['goru', 0.45], ['piyaj', 0.25], ['tel', 0.15], ['moshla', 1]]},
+  {id:'x45',n:'কলাপাতায় ভাত, ডাল ও পাপড়',t:'l',m:30,k:650,ing:[['chal', 0.6], ['dal', 0.25], ['tel', 0.06]]},
+  {id:'x46',n:'নান ও ভুনা মাংস',t:'d',m:70,k:860,ing:[['atta', 0.4], ['goru', 0.45], ['piyaj', 0.2], ['tel', 0.12], ['moshla', 0.8]]},
+  {id:'x47',n:'শর্মা/র‍্যাপ ও কাটলেট',t:'d',m:35,k:700,ing:[['atta', 0.35], ['murgi', 0.35], ['dim', 0.2], ['piyaj', 0.1], ['tel', 0.15]]},
+  {id:'x48',n:'পোলাও ও ভাজা রূপচাঁদা',t:'l',m:50,k:900,ing:[['chal', 0.5], ['rui', 0.4], ['piyaj', 0.1], ['tel', 0.2], ['moshla', 0.5]]},
+  {id:'x49',n:'মিক্সড গ্রিল প্ল্যাটার',t:'d',m:50,k:780,ing:[['murgi', 0.4], ['goru', 0.2], ['tomato', 0.1], ['piyaj', 0.1], ['tel', 0.1], ['moshla', 0.7]]},
+  {id:'x50',n:'মশলাদার মুরগির ঝোল',t:'l',m:50,k:800,ing:[['chal', 0.5], ['murgi', 0.6], ['piyaj', 0.2], ['tel', 0.12], ['moshla', 0.8]]},
+  {id:'x51',n:'শাহী মাটন বিরিয়ানি',t:'l',m:120,k:1000,ing:[['chal', 0.5], ['goru', 0.45], ['dudh', 0.1], ['piyaj', 0.25], ['tel', 0.15], ['moshla', 1]]},
+  {id:'x52',n:'চিকেন পোলাও ও আচার',t:'l',m:70,k:900,ing:[['chal', 0.5], ['murgi', 0.5], ['dudh', 0.1], ['piyaj', 0.15], ['tel', 0.12], ['moshla', 0.6]]},
+  {id:'x53',n:'ফুচকা ও চটপটি',t:'d',m:25,k:420,ing:[['alu', 0.2], ['chola', 0.15], ['tomato', 0.1], ['piyaj', 0.1], ['moshla', 0.3]]},
+  {id:'x54',n:'ভাজা মাছ, ঝোল ও সবজি',t:'l',m:45,k:800,ing:[['chal', 0.5], ['rui', 0.4], ['potol', 0.2], ['piyaj', 0.1], ['tel', 0.15], ['moshla', 0.5]]},
+  {id:'x55',n:'চালের ডোসা ও ডিম',t:'b',m:25,k:420,ing:[['chal', 0.15], ['dal', 0.05], ['dim', 0.33], ['tel', 0.06]]},
+  {id:'x56',n:'ঘি ভুনা খিচুড়ি ও পাপড়',t:'b',m:45,k:560,ing:[['chal', 0.3], ['dal', 0.2], ['tel', 0.1], ['piyaj', 0.1], ['moshla', 0.4]]},
+  {id:'x57',n:'চিকেন টিক্কা মাসালা ও নান',t:'d',m:60,k:860,ing:[['atta', 0.35], ['murgi', 0.5], ['doi', 0.1], ['piyaj', 0.15], ['tel', 0.12], ['moshla', 0.8]]}
+];
+const RMAP = {};
+RECIPES.forEach((r, i) => { r.i = i; RMAP[r.id] = r; });
+const PLATE = {
+  r1:[['porota','পরোটা ২টি',300],['egg','ডিম ভাজি',160],['veg','পেঁয়াজ-মরিচ',60]],
+  r2:[['muri','মুড়ি এক বাটি',160],['milk','দুধ এক গ্লাস',140]],
+  r3:[['ruti','আটার রুটি ২টি',220],['alu','আলু ভাজি',200],['veg','পেঁয়াজ-মরিচ',60]],
+  r4:[['bread','পাউরুটি ২ স্লাইস',200],['egg','ডিম টোস্ট',180],['veg','টমেটো-পেঁয়াজ',40]],
+  r5:[['rice','ভাত',420],['dal','ডাল',200],['alu','আলু ভর্তা',160]],
+  r6:[['rice','ভাত',420],['fish','রুই মাছের ঝোল',280],['alu','আলু',120]],
+  r7:[['khichuri','খিচুড়ি',600],['eggcurry','ডিম ভুনা',150],['veg','সালাদ',100]],
+  r8:[['rice','ভাত',420],['chicken','মুরগির ঝোল',340],['alu','আলু',120]],
+  r9:[['rice','ভাত',420],['lau','লাউ ঘণ্ট',120],['dal','ডাল',200]],
+  r10:[['rice','ভাত',420],['fish','তেলাপিয়া মাছ',280],['shak','পালং শাক',100]],
+  r11:[['ruti','আটার রুটি ৩টি',300],['beef','গরুর মাংস ভুনা',420],['veg','সালাদ',100]],
+  r12:[['rice','ভাত',380],['eggcurry','ডিমের ঝোল',240],['alu','আলু',160]],
+  r13:[['ruti','আটার রুটি ৩টি',300],['chicken','মুরগির কারি',340],['veg','সালাদ',60]],
+  r14:[['rice','ভাত',380],['begun','বেগুন ভাজি',180],['dal','ডাল',200]],
+  r15:[['ruti','আটার রুটি ৩টি',300],['potol','পটল তরকারি',220],['alu','আলু',100]],
+  r16:[['rice','ভাত',380],['kumra','মিষ্টি কুমড়া',160],['dal','ডাল',200]],
+  x01:[['khichuri', 'ভুনা খিচুড়ি', 520], ['beef', 'মাংস ভুনা', 330], ['veg', 'সালাদ', 50]],
+  x02:[['rice', 'ভাত', 380], ['curry', 'কারি দুই পদ', 340], ['veg', 'সালাদ', 60]],
+  x03:[['rice', 'ভাত', 420], ['veg', 'মিক্স সবজি ভাজি', 220], ['dal', 'ডাল', 160]],
+  x04:[['rice', 'পোলাও', 430], ['fish', 'মাছ ভুনা', 320], ['egg', 'সিদ্ধ ডিম', 200]],
+  x05:[['ruti', 'নান', 260], ['rice', 'ফ্রাইড রাইস', 340], ['chicken', 'মাংসের কারি', 320]],
+  x06:[['rice', 'ফ্রাইড রাইস', 480], ['chicken', 'চিকেন ফ্রাই', 360], ['veg', 'সালাদ', 40]],
+  x07:[['rice', 'ভাত', 380], ['beef', 'মাংসের ঝোল', 420], ['veg', 'সালাদ', 50]],
+  x08:[['rice', 'ভাত', 400], ['fish', 'চিংড়ি তরকারি', 240], ['veg', 'সবজি', 80]],
+  x09:[['rice', 'পোলাও', 460], ['chicken', 'মুরগির রোস্ট', 420], ['veg', 'সালাদ', 80]],
+  x10:[['rice', 'ভাত', 380], ['chicken', 'মুরগির ঝোল', 330], ['alu', 'আলু', 120]],
+  x11:[['rice', 'সবজি ভাত', 300], ['egg', 'ডিম', 180]],
+  x12:[['rice', 'ভাত', 420], ['shak', 'শাক', 130], ['begun', 'ভাজা বেগুন', 170]],
+  x13:[['rice', 'ভাত', 380], ['chicken', 'শাক-মুরগি', 300], ['milk', 'দই', 140]],
+  x14:[['porota', 'পরোটা ২টি', 300], ['chicken', 'চিলি চিকেন', 300]],
+  x15:[['porota', 'পরোটা ২টি', 280], ['beef', 'কষা মাংস', 340]],
+  x16:[['veg', 'সালাদ', 200], ['egg', 'সিদ্ধ ডিম', 90], ['dal', 'ছোলা', 90]],
+  x17:[['rice', 'ভাত', 380], ['chicken', 'মুরগির রোস্ট', 360], ['alu', 'ভর্তা', 140]],
+  x18:[['rice', 'ভাত', 280], ['egg', 'ডিম', 170], ['veg', 'সবজি', 50]],
+  x19:[['milk', 'মুরগির স্যুপ', 420]],
+  x20:[['rice', 'ভাত', 400], ['beef', 'ভুনা মাংস', 440], ['veg', 'সালাদ', 60]],
+  x21:[['rice', 'ভাত', 400], ['fish', 'মাছ', 260], ['dal', 'ডাল', 150]],
+  x22:[['rice', 'ভাত', 400], ['beef', 'মাংসের ঝোল', 400], ['veg', 'সালাদ', 60]],
+  x23:[['rice', 'কাচ্চি বিরিয়ানি', 620], ['beef', 'মাংস', 280], ['alu', 'আলু', 100]],
+  x24:[['rice', 'ভাত', 420], ['fish', 'লতি-শুঁটকি', 200], ['alu', 'আলু ভুনা', 120]],
+  x25:[['rice', 'ভাত', 420], ['fish', 'মাছের ঝোল', 260], ['alu', 'আলু', 100]],
+  x26:[['rice', 'ভাত', 420], ['dal', 'ডাল', 140], ['veg', 'রসুনের আচার', 60]],
+  x27:[['ruti', 'নান', 300], ['chicken', 'চিকেন কাবাব', 440], ['veg', 'সালাদ', 60]],
+  x28:[['rice', 'ভাত', 400], ['fish', 'মাছ ভাজা', 220], ['egg', 'ডিম ভাজা', 160]],
+  x29:[['rice', 'ভাত', 420], ['fish', 'মাছ', 300], ['dal', 'ডাল', 160]],
+  x30:[['khichuri', 'ভুনা খিচুড়ি', 500], ['fish', 'ইলিশ', 420]],
+  x31:[['curry', 'রেড সস পাস্তা', 700]],
+  x32:[['rice', 'ভাত', 380], ['beef', 'কালা ভুনা', 480], ['veg', 'সালাদ', 60]],
+  x33:[['fish', 'ভাজা মাছ', 380], ['alu', 'পটেটো ওয়েজেস', 360]],
+  x34:[['curry', 'চাউমিন', 640]],
+  x35:[['curry', 'স্প্যাগেটি', 680]],
+  x36:[['veg', 'সবজি সালাদ', 260], ['egg', 'ডিম', 140]],
+  x37:[['veg', 'ডায়েট সালাদ', 250], ['dal', 'বাদাম-ছোলা', 100]],
+  x38:[['ruti', 'নান', 280], ['dal', 'ছোলা', 180], ['milk', 'দই', 100]],
+  x39:[['ruti', 'রুটি', 260], ['beef', 'কষা মাংস', 400], ['veg', 'সবজি', 100]],
+  x40:[['ruti', 'রুটি', 280], ['chicken', 'কাবাব', 420], ['veg', 'সালাদ', 80]],
+  x41:[['rice', 'ভাত', 400], ['beef', 'গরুর ঝোল', 420], ['alu', 'আলু', 60]],
+  x42:[['rice', 'মোরগ পোলাও', 520], ['chicken', 'গ্রিলড চিকেন', 420], ['veg', 'সালাদ', 40]],
+  x43:[['rice', 'ভাত', 380], ['beef', 'মাংস', 340], ['chicken', 'মুরগি', 280]],
+  x44:[['rice', 'বিরিয়ানি', 600], ['beef', 'বিফ ভুনা', 400]],
+  x45:[['rice', 'ভাত', 420], ['dal', 'ডাল', 200], ['veg', 'পাপড়-সালাদ', 30]],
+  x46:[['ruti', 'নান', 300], ['beef', 'ভুনা মাংস', 460], ['veg', 'সালাদ', 100]],
+  x47:[['ruti', 'র‍্যাপ', 320], ['chicken', 'কাটলেট', 380]],
+  x48:[['rice', 'পোলাও', 480], ['fish', 'ভাজা রূপচাঁদা', 420]],
+  x49:[['chicken', 'গ্রিল চিকেন', 360], ['beef', 'গ্রিল মাংস', 300], ['veg', 'সালাদ', 120]],
+  x50:[['rice', 'ভাত', 400], ['chicken', 'মুরগির ঝোল', 400]],
+  x51:[['rice', 'বিরিয়ানি', 600], ['beef', 'মাটন', 400]],
+  x52:[['rice', 'পোলাও', 480], ['chicken', 'চিকেন', 360], ['veg', 'আচার', 60]],
+  x53:[['dal', 'চটপটি', 220], ['alu', 'ফুচকা', 200]],
+  x54:[['rice', 'ভাত', 400], ['fish', 'ভাজা মাছ ও ঝোল', 280], ['veg', 'সবজি', 120]],
+  x55:[['porota', 'ডোসা', 240], ['egg', 'ডিম', 180]],
+  x56:[['khichuri', 'ঘি ভুনা খিচুড়ি', 500], ['veg', 'পাপড়', 60]],
+  x57:[['ruti', 'নান', 300], ['chicken', 'টিক্কা মাসালা', 500], ['veg', 'সালাদ', 60]]
+};
+const DISH_IMG = {'x01':'dish-01.jpg','x02':'dish-02.jpg','x03':'dish-03.jpg','x04':'dish-04.jpg','x05':'dish-05.jpg','x06':'dish-06.jpg','x07':'dish-07.jpg','x08':'dish-08.jpg','x09':'dish-09.jpg','x10':'dish-10.jpg','x11':'dish-11.jpg','x12':'dish-12.jpg','x13':'dish-13.jpg','x14':'dish-14.jpg','x15':'dish-15.jpg','x16':'dish-16.jpg','x17':'dish-17.jpg','x18':'dish-18.jpg','x19':'dish-19.jpg','x20':'dish-20.jpg','x21':'dish-21.jpg','x22':'dish-22.jpg','x23':'dish-23.jpg','x24':'dish-24.jpg','x25':'dish-25.jpg','x26':'dish-26.jpg','x27':'dish-27.jpg','x28':'dish-28.jpg','x29':'dish-29.jpg','x30':'dish-30.jpg','x31':'dish-31.jpg','x32':'dish-32.jpg','x33':'dish-33.jpg','x34':'dish-34.jpg','x35':'dish-35.jpg','x36':'dish-36.jpg','x37':'dish-37.jpg','x38':'dish-38.jpg','x39':'dish-39.jpg','x40':'dish-40.jpg','x41':'dish-41.jpg','x42':'dish-42.jpg','x43':'dish-43.jpg','x44':'dish-44.jpg','x45':'dish-45.jpg','x46':'dish-46.jpg','x47':'dish-47.jpg','x48':'dish-48.jpg','x49':'dish-49.jpg','x50':'dish-50.jpg','x51':'dish-51.jpg','x52':'dish-52.jpg','x53':'dish-53.jpg','x54':'dish-54.jpg','x55':'dish-55.jpg','x56':'dish-56.jpg','x57':'dish-57.jpg'};
+const LAYOUT = { 1:[[0.5,0.5]], 2:[[0.3,0.5],[0.7,0.5]], 3:[[0.36,0.6],[0.68,0.33],[0.7,0.72]] };
+const SW = { rice:'#EFE9D8', khichuri:'#E6C455', ruti:'#D9AC6C', porota:'#E6B15C', bread:'#F4E0B6', dal:'#E2AE2B', egg:'#F2A900', eggcurry:'#C4561D', fish:'#C9651F', chicken:'#B8531A', beef:'#5A2A12', veg:'#7FB04A', shak:'#2F6B1F', alu:'#E7B84A', begun:'#4A2A5A', kumra:'#E8821F', potol:'#7DAD52', lau:'#CFE3A8', muri:'#EFE1B8', milk:'#FFFFFF', curry:'#D07A2A' };
+const STORES = [
+  {id:'local',n:'লোকাল বাজার',note:'সাধারণত সবচেয়ে কম দাম',m:1.0},
+  {id:'agora',n:'Agora',note:'সুপারশপ',m:1.04},
+  {id:'shwapno',n:'Shwapno',note:'সুপারশপ',m:1.07},
+  {id:'meena',n:'Meena Bazar',note:'সুপারশপ',m:1.09},
+  {id:'unimart',n:'Unimart',note:'সুপারশপ',m:1.12}
+];
+const DAYS = ['শনি','রবি','সোম','মঙ্গল','বুধ','বৃহঃ','শুক্র'];
+const DAYS_FULL = ['শনিবার','রবিবার','সোমবার','মঙ্গলবার','বুধবার','বৃহস্পতিবার','শুক্রবার'];
+const SLOTS = [['b','নাস্তা'],['l','দুপুর'],['d','রাত']];
+const SLOT_NAME = {b:'নাস্তা',l:'দুপুর',d:'রাত'};
+const TYPE_TITLE = {b:'নাস্তা · Breakfast',l:'দুপুর · Lunch',d:'রাত · Dinner'};
+const TYPE_W = {b:0.55,l:1.3,d:1.15};
+const DIETS = [['meat','মাংস বাদ'],['fish','মাছ বাদ'],['egg','ডিম বাদ']];
+const BAN = {meat:['murgi','goru'],fish:['rui','tilapia','ilish','chingri','shutki'],egg:['dim']};
+const ACT = [['light','হালকা'],['mod','মাঝারি'],['active','সক্রিয়']];
+const GOAL = [['lose','ওজন কমানো'],['keep','ঠিক রাখা'],['gain','ওজন বাড়ানো']];
+const SEX = [['m','পুরুষ'],['f','নারী']];
+const BLANK_FORM = { id: null, n: '', t: 'l', m: 30, k: 600, cost: 200, ing: '' };
+
+const PILL_BASE = 'min-height:44px;padding:0 18px;border-radius:999px;font-size:16px;font-weight:600;cursor:pointer;';
+const PILL_ON = PILL_BASE + 'border:1.5px solid #3F7D2B;background:#3F7D2B;color:#FFFFFF;';
+const PILL_OFF = PILL_BASE + 'border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22;';
+const ROW_BASE = 'min-height:56px;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;border-radius:14px;padding:10px 14px;cursor:pointer;color:#1E2A22;';
+const ROW_ON = ROW_BASE + 'border:2px solid #3F7D2B;background:#EAF3E2;';
+const ROW_OFF = ROW_BASE + 'border:1.5px solid #D8D2C2;background:#FFFFFF;';
+const MEM_BASE = 'flex:1 1 150px;min-width:0;box-sizing:border-box;display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;border-radius:14px;padding:12px 14px;cursor:pointer;color:#1E2A22;';
+const MEM_ON = MEM_BASE + 'border:2px solid #3F7D2B;background:#EAF3E2;';
+const MEM_OFF = MEM_BASE + 'border:1.5px solid #D8D2C2;background:#FFFFFF;';
+const TAB_BASE = 'flex:1 1 0;min-width:0;min-height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;border:none;background:transparent;cursor:pointer;padding:0;';
+
+const STORE_KEY = 'thala.v1';
+const PERSIST = ['members', 'selMember', 'nextId', 'budget', 'store', 'excl', 'seed', 'plan', 'saved', 'checked', 'extras', 'extraSeq', 'myRecipes', 'recSeq', 'priceOv', 'weekStart', 'weekLog', 'weekChecked', 'dishPhotos'];
+function lsRead() {
+  try { return JSON.parse(window.localStorage.getItem(STORE_KEY) || 'null'); } catch (e) { return null; }
+}
+function lsWrite(obj) {
+  try { window.localStorage.setItem(STORE_KEY, JSON.stringify(obj)); return true; } catch (e) { return false; }
+}
+function cloudApi() {
+  try { return (typeof window !== 'undefined' && window.ThalaCloud && window.ThalaCloud.enabled) ? window.ThalaCloud : null; } catch (e) { return null; }
+}
+function splitPhotos(d) {
+  const photos = {};
+  const c = JSON.parse(JSON.stringify(d));
+  (c.members || []).forEach((m) => { if (m.photo) { photos['m' + m.id] = m.photo; m.photo = ''; } });
+  Object.keys(c.dishPhotos || {}).forEach((k) => { photos['d' + k] = c.dishPhotos[k]; });
+  c.dishPhotos = {};
+  return { d: c, photos: photos };
+}
+function joinPhotos(d, photos) {
+  (d.members || []).forEach((m) => { if (photos['m' + m.id]) m.photo = photos['m' + m.id]; });
+  d.dishPhotos = {};
+  Object.keys(photos).forEach((k) => { if (k.charAt(0) === 'd') d.dishPhotos[k.slice(1)] = photos[k]; });
+  return d;
+}
+function readPhoto(file, done) {
+  if (!file) return;
+  const fr = new FileReader();
+  fr.onload = function () {
+    const src = String(fr.result);
+    const img = new Image();
+    img.onload = function () {
+      const k = Math.min(1, 560 / Math.max(img.width, img.height));
+      const c = document.createElement('canvas');
+      c.width = Math.max(1, Math.round(img.width * k));
+      c.height = Math.max(1, Math.round(img.height * k));
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      done(c.toDataURL('image/jpeg', 0.82));
+    };
+    img.onerror = function () { done(src); };
+    img.src = src;
+  };
+  fr.readAsDataURL(file);
+}
+function pickFile(e, done) {
+  const f = e.target.files && e.target.files[0];
+  readPhoto(f, done);
+  try { e.target.value = ''; } catch (err) { /* ignore */ }
+}
+function bn(n) { return String(n).replace(/\d/g, function (d) { return '০১২৩৪৫৬৭৮৯'[d]; }); }
+const MONTHS = ['জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'];
+const MONTHS_S = ['জানু', 'ফেব্রু', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টে', 'অক্টো', 'নভে', 'ডিসে'];
+function pad2(n) { return (n < 10 ? '0' : '') + n; }
+function dkey(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+function pkey(k) { const a = String(k).split('-'); return new Date(Number(a[0]), Number(a[1]) - 1, Number(a[2])); }
+function addDays(d, n) { return new Date(d.getFullYear(), d.getMonth(), d.getDate() + n); }
+function satOf(d) { return addDays(d, -((d.getDay() + 1) % 7)); }
+function dshort(d) { return bn(d.getDate()) + ' ' + MONTHS_S[d.getMonth()]; }
+function fmtQty(ing, q) {
+  if (ing.pk || ing.u === 'বার') return bn(Math.max(1, Math.round(q))) + ' ' + ing.u;
+  if (ing.u === 'কেজি') return q < 1 ? bn(Math.max(10, Math.round(q * 100) * 10)) + ' গ্রাম' : bn(Math.round(q * 10) / 10) + ' কেজি';
+  if (ing.u === 'লিটার') return q < 1 ? bn(Math.max(10, Math.round(q * 100) * 10)) + ' মিলি' : bn(Math.round(q * 10) / 10) + ' লিটার';
+  if (ing.u === 'ডজন') return bn(Math.max(1, Math.round(q * 12))) + ' টি';
+  return bn(Math.round(q * 10) / 10) + ' ' + ing.u;
+}
+function num(n) { return bn(Math.round(n).toLocaleString('en-US')); }
+function money(n) { return '৳' + num(n); }
+function boxStyle(done) {
+  return 'width:26px;height:26px;box-sizing:border-box;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#FFFFFF;border:2px solid ' + (done ? '#3F7D2B' : '#8A948C') + ';background:' + (done ? '#3F7D2B' : '#FFFFFF') + ';';
+}
+
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const members = [
+      {id:1,name:'বাবা',age:42,sex:'m',w:75,h:170,act:'mod',goal:'keep'},
+      {id:2,name:'মা',age:38,sex:'f',w:60,h:159,act:'light',goal:'keep'},
+      {id:3,name:'ছেলে',age:14,sex:'m',w:48,h:158,act:'active',goal:'keep'},
+      {id:4,name:'মেয়ে',age:9,sex:'f',w:28,h:130,act:'active',goal:'keep'}
+    ];
+    this.state = {
+      screen: 'welcome', tab: 'family', store: 'local', budget: 18000,
+      priceOv: {}, showPrices: false, weekStart: dkey(satOf(new Date())), weekLog: {}, weekChecked: {}, viewMonth: '', calOpen: false, calMonth: '', remind: false, remindSlot: null, memPopup: null, dishPhotos: {}, chartOpen: false,
+      members: members, selMember: 1, nextId: 5,
+      recPopup: null, addSlot: 1, addDay: 0,
+      excl: {}, seed: 0, plan: [], sel: 1, saved: {}, checked: {}, planView: 'week', popup: false,
+      extras: [], extraSeq: 1, showAddItem: false, draft: { name: '', qty: '', price: '' }, draftError: '',
+      myRecipes: [], recSeq: 1, recOpen: false, recForm: Object.assign({}, BLANK_FORM), recError: ''
+    };
+    this.state.plan = this.gen(18000, 4, {}, 0, []);
+    this.localT = 0;
+    this.cloudBusy = false;
+    this.state.cloudOn = !!cloudApi();
+    this.state.cloudUser = null;
+    this.state.cloudMsg = '';
+    this.state.saveWarn = false;
+    this.state.confirmReset = false;
+    const saved = lsRead();
+    if (saved && saved.d && Array.isArray(saved.d.members) && saved.d.members.length > 0) {
+      PERSIST.forEach((k) => { if (saved.d[k] !== undefined) this.state[k] = saved.d[k]; });
+      if (!Array.isArray(this.state.plan) || this.state.plan.length !== 21) {
+        this.state.plan = this.gen(this.state.budget, this.state.members.length, this.state.excl, this.state.seed, this.state.myRecipes);
+      }
+      if (!this.state.members.some((m) => m.id === this.state.selMember)) this.state.selMember = this.state.members[0].id;
+      this.state.screen = 'app';
+      this.localT = saved.t || 0;
+    }
+    if (typeof this.state.weekStart !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(this.state.weekStart)) this.state.weekStart = dkey(satOf(new Date()));
+    if (!this.state.weekLog || typeof this.state.weekLog !== 'object') this.state.weekLog = {};
+    if (!this.state.weekChecked || typeof this.state.weekChecked !== 'object') this.state.weekChecked = {};
+    this.state.viewMonth = this.state.weekStart.slice(0, 7);
+    this.state.calMonth = dkey(new Date()).slice(0, 7);
+    if (this.state.screen === 'app') this.openReminder(true);
+    const cloud = cloudApi();
+    if (cloud) cloud.onAuth((u) => { this.setState({ cloudUser: u, cloudMsg: '' }); if (u) this.cloudSync(); });
+  }
+
+  openReminder(silent) {
+    const now = new Date();
+    const di = (now.getDay() + 1) % 7;
+    const h = now.getHours();
+    const slot = h < 11 ? 0 : (h < 16 ? 1 : 2);
+    const patch = { remind: true, remindSlot: slot, sel: di * 3 + slot, popup: false, recPopup: null };
+    if (silent) Object.assign(this.state, patch); else this.setState(patch);
+  }
+
+  selectWeek(key) {
+    const s = this.state;
+    const wc = Object.assign({}, s.weekChecked);
+    wc[s.weekStart] = s.checked;
+    let next = wc[key];
+    if (!next && s.weekLog[key]) { next = {}; (s.weekLog[key].items || []).forEach((i) => { if (i.done) next[i.id] = true; }); }
+    this.setState({ weekChecked: wc, weekStart: key, checked: next || {}, viewMonth: key.slice(0, 7) });
+  }
+
+  queueSave() {
+    clearTimeout(this.__saveTimer);
+    this.__saveTimer = setTimeout(() => this.saveNow(), 350);
+  }
+
+  saveNow() {
+    const d = {};
+    PERSIST.forEach((k) => { d[k] = this.state[k]; });
+    this.localT = Date.now();
+    let ok = lsWrite({ v: 1, t: this.localT, d: d });
+    let warn = false;
+    if (!ok) {
+      ok = lsWrite({ v: 1, t: this.localT, d: splitPhotos(d).d });
+      warn = true;
+    }
+    if (warn !== this.state.saveWarn) { this.state = Object.assign({}, this.state, { saveWarn: warn }); this.forceUpdate(); }
+    const cloud = cloudApi();
+    if (cloud && this.state.cloudUser) {
+      clearTimeout(this.__cloudTimer);
+      this.__cloudTimer = setTimeout(() => this.cloudPush(), 1500);
+    }
+  }
+
+  setState(p) {
+    const was = !!document.querySelector('[role="dialog"]');
+    if (!was) this._opener = document.activeElement;
+    super.setState(p);
+    this.queueSave();
+    setTimeout(() => {
+      const d = document.querySelector('[role="dialog"]');
+      if (d && !was) { const c = d.querySelector('button[aria-label="পপ-আপ বন্ধ করুন"]'); (c || d).focus(); }
+      else if (!d && was && this._opener && document.body.contains(this._opener)) { try { this._opener.focus(); } catch (e) {} }
+    }, 60);
+  }
+
+  cloudPush() {
+    const cloud = cloudApi();
+    if (!cloud || !this.state.cloudUser) return Promise.resolve();
+    const d = {};
+    PERSIST.forEach((k) => { d[k] = this.state[k]; });
+    const sp = splitPhotos(d);
+    return cloud.push({ t: this.localT || Date.now(), state: JSON.stringify(sp.d), photos: sp.photos })
+      .then(() => { this.state = Object.assign({}, this.state, { cloudMsg: 'ক্লাউডে সেভ হয়েছে।' }); this.forceUpdate(); })
+      .catch(() => { this.state = Object.assign({}, this.state, { cloudMsg: 'ক্লাউডে সেভ করা যায়নি। ইন্টারনেট দেখুন।' }); this.forceUpdate(); });
+  }
+
+  cloudSync() {
+    const cloud = cloudApi();
+    if (!cloud) return;
+    cloud.pull().then((remote) => {
+      if (remote && remote.state && (remote.t || 0) > this.localT) {
+        const d = joinPhotos(JSON.parse(remote.state), remote.photos || {});
+        const patch = {};
+        PERSIST.forEach((k) => { if (d[k] !== undefined) patch[k] = d[k]; });
+        patch.screen = 'app';
+        patch.cloudMsg = 'ক্লাউড থেকে আপনার সেভ করা তথ্য আনা হয়েছে।';
+        super.setState(patch);
+        this.localT = remote.t;
+        this.saveNow();
+      } else {
+        this.cloudPush();
+      }
+    }).catch(() => { this.setState({ cloudMsg: 'ক্লাউড থেকে তথ্য আনা যায়নি।' }); });
+  }
+
+  calcTarget(m) {
+    const bmr = 10 * m.w + 6.25 * m.h - 5 * m.age + (m.sex === 'm' ? 5 : -161);
+    const f = { light: 1.375, mod: 1.55, active: 1.725 }[m.act];
+    let t = bmr * f;
+    if (m.goal === 'lose') t -= 400;
+    if (m.goal === 'gain') t += 300;
+    return Math.max(1200, Math.round(t / 10) * 10);
+  }
+
+  openRecipe(id) {
+    const r = this.R(id);
+    const si = ['b', 'l', 'd'].indexOf(r.t);
+    this.setState({ recPopup: id, addSlot: si < 0 ? 1 : si, addDay: Math.floor(this.state.sel / 3) });
+  }
+
+  R(id) {
+    return RMAP[id] || this.state.myRecipes.find((r) => r.id === id) || RECIPES[0];
+  }
+
+  allowed(r, excl) {
+    for (const k in excl) {
+      if (excl[k]) {
+        for (const ing of r.ing) { if (BAN[k].indexOf(ing[0]) >= 0) return false; }
+      }
+    }
+    return true;
+  }
+
+  pool(type, excl, mine) {
+    const all = RECIPES.concat(mine);
+    const p = all.filter((r) => r.t === type && this.allowed(r, excl));
+    return p.length ? p : RECIPES.filter((r) => r.t === type);
+  }
+
+  P(id) {
+    const v = this.state.priceOv[id];
+    if (v !== undefined && v !== '' && isFinite(Number(v)) && Number(v) >= 0) return Number(v);
+    return ING[id].p;
+  }
+
+  rcost(r, size, mult) {
+    if (r.custom) return r.cost * (size / 4);
+    let c = 0;
+    r.ing.forEach((x) => { c += x[1] * (size / 4) * this.P(x[0]); });
+    return c * mult;
+  }
+
+  // monthly budget -> weekly budget used to build the plan
+  gen(monthBudget, size, excl, seed, mine) {
+    const avg = (monthBudget * 7 / 30) / 21;
+    const out = [];
+    const recent = { b: [], l: [], d: [] };
+    for (let day = 0; day < 7; day++) {
+      SLOTS.forEach((sl) => {
+        const type = sl[0];
+        const target = avg * TYPE_W[type];
+        let best = null;
+        let bestScore = 1e9;
+        this.pool(type, excl, mine).forEach((r, pi) => {
+          const idx = r.custom ? 40 + pi : r.i;
+          let sc = Math.abs(this.rcost(r, size, 1) - target);
+          if (recent[type].indexOf(r.id) >= 0) sc += 500;
+          sc += (idx * 37 + day * 11 + seed * 7) % 23;
+          if (sc < bestScore) { bestScore = sc; best = r; }
+        });
+        recent[type].push(best.id);
+        if (recent[type].length > 3) recent[type].shift();
+        out.push(best.id);
+      });
+    }
+    return out;
+  }
+
+  grocery(plan, size, qs) {
+    const k = qs === undefined ? 1 : qs;
+    const agg = {};
+    const mineCount = {};
+    plan.forEach((rid) => {
+      const r = this.R(rid);
+      if (r.custom) { mineCount[rid] = (mineCount[rid] || 0) + 1; return; }
+      r.ing.forEach((x) => {
+        const a = agg[x[0]] || (agg[x[0]] = { qty: 0, rec: {} });
+        a.qty += x[1] * (size / 4) * k;
+        a.rec[rid] = 1;
+      });
+    });
+    const out = Object.keys(agg).map((id) => {
+      const ing = Object.assign({}, ING[id], { p: this.P(id) });
+      const raw = agg[id].qty;
+      const q = ing.pk ? (k < 1 ? Math.max(1, Math.round(raw)) : Math.ceil(raw - 1e-9)) : (k < 1 ? Math.ceil(raw * 20 - 1e-9) / 20 : Math.ceil(raw * 10 - 1e-9) / 10);
+      return { id: id, ing: ing, q: q, count: Object.keys(agg[id].rec).length };
+    });
+    Object.keys(mineCount).forEach((rid) => {
+      const r = this.R(rid);
+      out.push({ id: 'c_' + rid, ing: { n: r.n, c: 'mine', u: 'বার', p: r.cost * (size / 4), pk: true, fixed: true }, q: mineCount[rid], count: mineCount[rid] });
+    });
+    return out;
+  }
+
+  itemCost(it, m) {
+    return it.ing.fixed ? Math.round(it.q * it.ing.p) : Math.round(it.q * it.ing.p * m);
+  }
+
+  totalFor(items, m) {
+    let t = 0;
+    items.forEach((it) => { t += this.itemCost(it, m); });
+    this.state.extras.forEach((x) => { t += x.price; });
+    return t;
+  }
+
+  // Changes state and rebuilds the plan from the new budget, size, diets and own recipes.
+  applyPlan(patch) {
+    const ns = Object.assign({}, this.state, patch);
+    const plan = this.gen(ns.budget, ns.members.length, ns.excl, ns.seed, ns.myRecipes);
+    this.setState(Object.assign({}, patch, { plan: plan }));
+  }
+
+  updateMember(patch) {
+    const sel = this.state.selMember;
+    this.setState({ members: this.state.members.map((m) => (m.id === sel ? Object.assign({}, m, patch) : m)) });
+  }
+
+  setForm(patch) {
+    this.setState({ recForm: Object.assign({}, this.state.recForm, patch), recError: '' });
+  }
+
+  gap(planned, need) {
+    const d = need - planned;
+    if (d > 150) return { text: 'আরও ' + num(d) + ' ক্যালোরি দরকার। ভাত বা রুটি একটু বাড়িয়ে নিন।', over: false };
+    if (d < -150) return { text: num(-d) + ' ক্যালোরি বেশি হয়ে যাচ্ছে।', over: true };
+    return { text: 'লক্ষ্যের কাছাকাছি আছে।', over: false };
+  }
+
+  renderVals() {
+    const s = this.state;
+    const n = s.members.length;
+    const store = STORES.find((x) => x.id === s.store);
+    const mult = store.m;
+    const baseItems = this.grocery(s.plan, n, 1);
+    const wkBudget = s.budget * 7 / 30;
+    let fixedCost = 0;
+    let scalCost = 0;
+    baseItems.forEach((it) => { const c0 = this.itemCost(it, 1); if (it.ing.fixed) fixedCost += c0; else scalCost += c0; });
+    let extrasSum = 0;
+    s.extras.forEach((x) => { extrasSum += x.price; });
+    let qs = 1;
+    if (scalCost > 0 && scalCost + fixedCost + extrasSum > wkBudget) qs = Math.max(0.1, Math.min(1, (wkBudget - extrasSum - fixedCost) / scalCost));
+    let items = baseItems;
+    if (qs < 1) {
+      const room = wkBudget - extrasSum - fixedCost;
+      for (let pass = 0; pass < 4; pass++) {
+        items = this.grocery(s.plan, n, qs);
+        let sc = 0;
+        items.forEach((it) => { if (!it.ing.fixed) sc += this.itemCost(it, 1); });
+        if (sc <= 0 || Math.abs(sc - room) < room * 0.02) break;
+        qs = Math.max(0.05, Math.min(1, qs * room / sc));
+      }
+      items = this.grocery(s.plan, n, qs);
+    }
+    const fitNote = qs < 1 ? ('মাসিক বাজেট কম, তাই বাজারের পরিমাণ প্রায় ' + bn(Math.round(qs * 100)) + '% ধরা হয়েছে। পুরো প্রয়োজন মেটাতে বাজেট বাড়ান।') : '';
+    const weekTotal = this.totalFor(items, mult);
+    const monthTotal = Math.round(weekTotal * 30 / 7);
+    const diff = s.budget - monthTotal;
+    const pct = Math.min(100, Math.round((monthTotal / s.budget) * 100));
+    const sizeText = bn(n) + ' জন';
+
+    const sm = s.members.find((m) => m.id === s.selMember) || s.members[0];
+    let famNeed = 0;
+    s.members.forEach((m) => { famNeed += this.calcTarget(m); });
+
+    const dayKcal = (di) => {
+      let t = 0;
+      for (let si = 0; si < 3; si++) t += this.R(s.plan[di * 3 + si]).k;
+      return t;
+    };
+    let weekKcal = 0;
+    for (let di = 0; di < 7; di++) weekKcal += dayKcal(di);
+    const avgPlanned = (weekKcal / 7) * n;
+    const avgGap = this.gap(avgPlanned, famNeed);
+    const avgPct = Math.min(100, Math.round((avgPlanned / famNeed) * 100));
+
+    const selDi = Math.floor(s.sel / 3);
+    const selDayPlanned = dayKcal(selDi) * n;
+    const selGap = this.gap(selDayPlanned, famNeed);
+    const selDayPct = Math.min(100, Math.round((selDayPlanned / famNeed) * 100));
+
+    const titles = { family: 'ফ্যামিলি', budget: 'মাসিক বাজেট', grocery: 'গ্রোসারি লিস্ট', recipes: 'রেসিপি', plan: (s.weekStart === dkey(satOf(new Date())) ? 'এই সপ্তাহের প্ল্যান' : 'প্ল্যান · ' + dshort(pkey(s.weekStart)) + ' – ' + dshort(addDays(pkey(s.weekStart), 6))) };
+
+    const storeList = STORES.map((x) => ({
+      name: x.n, note: x.note, on: x.id === s.store,
+      total: money(Math.round(this.totalFor(items, x.m) * 30 / 7)),
+      style: x.id === s.store ? ROW_ON : ROW_OFF,
+      pick: () => this.setState({ store: x.id })
+    }));
+
+    const dietList = DIETS.map((d) => ({
+      label: d[1], on: !!s.excl[d[0]],
+      style: s.excl[d[0]] ? PILL_ON : PILL_OFF,
+      pick: () => { const e = Object.assign({}, this.state.excl); e[d[0]] = !e[d[0]]; this.applyPlan({ excl: e }); }
+    }));
+
+    const weekRows = DAYS.map((dn, di) => {
+      const planned = dayKcal(di) * n;
+      const d = famNeed - planned;
+      const fillPct = Math.min(100, Math.round((planned / (famNeed * 1.25)) * 100));
+      const color = d > 150 ? '#C98A00' : (d < -150 ? '#A8451A' : '#3F7D2B');
+      const word = d > 150 ? 'কম' : (d < -150 ? 'বেশি' : 'ঠিক');
+      const longWord = d > 150 ? 'লক্ষ্যের কম' : (d < -150 ? 'লক্ষ্যের বেশি' : 'লক্ষ্যের কাছাকাছি');
+      return {
+        name: dn,
+        date: bn(addDays(pkey(s.weekStart), di).getDate()),
+        value: num(planned),
+        word: word,
+        fillStyle: 'display:block;height:100%;border-radius:999px;width:' + fillPct + '%;background:' + color,
+        label: DAYS_FULL[di] + ' ' + bn(addDays(pkey(s.weekStart), di).getDate()) + ' ' + MONTHS[addDays(pkey(s.weekStart), di).getMonth()] + ': ' + num(planned) + ' ক্যালোরি, ' + longWord,
+        pick: () => this.setState({ planView: 'day', sel: di * 3 })
+      };
+    });
+
+    const dayMeals = SLOTS.map((sl, si) => {
+      const idx = selDi * 3 + si;
+      const r = this.R(s.plan[idx]);
+      return {
+        slot: sl[1],
+        name: r.n,
+        hasThumb: !!DISH_IMG[r.id], thumb: DISH_IMG[r.id] || '',
+        kcal: num(r.k),
+        label: sl[1] + ': ' + r.n + ', ' + num(r.k) + ' ক্যালোরি। প্লেট দেখুন',
+        pick: () => this.setState({ sel: idx, popup: true })
+      };
+    });
+
+    const todayMeals = SLOTS.map((sl, si) => {
+      const tdi = (new Date().getDay() + 1) % 7;
+      const r = this.R(s.plan[tdi * 3 + si]);
+      return { slot: sl[1], name: r.n, label: 'আজ ' + sl[1] + ': ' + r.n + '। প্লেট দেখুন', pick: () => this.setState({ planView: 'day', sel: tdi * 3 + si, popup: true }) };
+    });
+
+    const selR = this.R(s.plan[s.sel]);
+    const pr = s.recPopup ? this.R(s.recPopup) : selR;
+    const recMode = !!s.recPopup;
+    const selType = SLOTS[s.sel % 3];
+    const isSaved = !!s.saved[pr.id];
+
+    const plateDef = pr.custom ? [['curry', pr.n, pr.k]] : PLATE[pr.id];
+    let plateTotal = 0;
+    plateDef.forEach((x) => { plateTotal += x[2]; });
+    const lay = LAYOUT[plateDef.length] || LAYOUT[3];
+    const PL = 280;
+    const plateItems = plateDef.map((x, i) => {
+      const size = Math.round(PL * (0.26 + 0.26 * (x[2] / plateTotal)));
+      const left = Math.round(lay[i][0] * PL - size / 2);
+      const top = Math.round(lay[i][1] * PL - size / 2);
+      const item = {
+        label: x[1],
+        kcal: num(x[2]),
+        style: 'position:absolute;box-sizing:border-box;left:' + left + 'px;top:' + top + 'px;width:' + size + 'px;height:' + size + 'px;filter:drop-shadow(0 3px 4px rgba(0,0,0,0.28))',
+        swStyle: 'flex:none;width:20px;height:20px;border-radius:999px;box-sizing:border-box;border:1px solid rgba(0,0,0,0.3);background:' + (SW[x[0]] || '#D07A2A')
+      };
+      item['is_' + x[0]] = true;
+      return item;
+    });
+    const plateAlt = pr.n + ' এর প্লেট: ' + plateDef.map((x) => x[1]).join(', ');
+
+    const groceryGroups = CATS.map((c) => ({
+      title: c[1],
+      items: items.filter((it) => it.ing.c === c[0]).map((it) => {
+        const done = !!s.checked[it.id];
+        const qtyText = (it.ing.pk ? bn(it.q) : bn(String(it.q).replace(/\.0$/, ''))) + ' ' + it.ing.u;
+        return {
+          name: it.ing.n,
+          qty: qtyText,
+          used: bn(it.count) + 'টি রেসিপিতে',
+          cost: money(this.itemCost(it, mult)),
+          done: done,
+          mark: done ? '✓' : '',
+          label: it.ing.n + ' কেনা হয়েছে',
+          boxStyle: boxStyle(done),
+          nameStyle: 'font-size:16px;font-weight:600;color:' + (done ? '#55605A' : '#1E2A22') + ';text-decoration:' + (done ? 'line-through' : 'none'),
+          toggle: () => { const c2 = Object.assign({}, this.state.checked); c2[it.id] = !c2[it.id]; this.setState({ checked: c2 }); }
+        };
+      })
+    })).filter((g) => g.items.length > 0);
+    const extraRows = s.extras.map((x) => {
+      const done = !!s.checked[x.id];
+      return {
+        name: x.name,
+        qty: x.qty || 'পরিমাণ লেখা নেই',
+        cost: money(x.price),
+        done: done,
+        mark: done ? '✓' : '',
+        label: x.name + ' কেনা হয়েছে',
+        removeLabel: x.name + ' মুছে ফেলুন',
+        boxStyle: boxStyle(done),
+        nameStyle: 'font-size:16px;font-weight:600;color:' + (done ? '#55605A' : '#1E2A22') + ';text-decoration:' + (done ? 'line-through' : 'none'),
+        toggle: () => { const c2 = Object.assign({}, this.state.checked); c2[x.id] = !c2[x.id]; this.setState({ checked: c2 }); },
+        remove: () => this.setState({ extras: this.state.extras.filter((e) => e.id !== x.id) })
+      };
+    });
+    let doneCount = 0;
+    let spent = 0;
+    items.forEach((it) => { if (s.checked[it.id]) { doneCount++; spent += this.itemCost(it, mult); } });
+    s.extras.forEach((x) => { if (s.checked[x.id]) { doneCount++; spent += Number(x.price) || 0; } });
+    const remain = Math.max(0, weekTotal - spent);
+
+    const recipeItem = (r) => {
+      const sv = !!s.saved[r.id];
+      return {
+        name: r.n,
+        hasThumb: !!DISH_IMG[r.id], thumb: DISH_IMG[r.id] || '',
+        kcal: num(r.k),
+        price: money(this.rcost(r, n, mult)),
+        time: bn(r.m) + ' মিনিট',
+        saved: sv,
+        open: () => this.openRecipe(r.id),
+        openLabel: r.n + ': প্লেট ও বানানোর ধারণা দেখুন',
+        label: sv ? 'সেভ করা' : 'সেভ করুন',
+        style: PILL_BASE + (sv ? 'border:1.5px solid #3F7D2B;background:#EAF3E2;color:#2E5F1F;' : 'border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22;') + 'font-size:14px;padding:0 12px;flex:none;',
+        toggle: () => { const m2 = Object.assign({}, this.state.saved); m2[r.id] = !m2[r.id]; this.setState({ saved: m2 }); }
+      };
+    };
+    const recFilters = [['all', 'সব'], ['b', 'নাস্তা'], ['l', 'দুপুর'], ['d', 'রাত']].map((f) => ({
+      label: f[1],
+      on: (s.recFilter || 'all') === f[0],
+      style: ((s.recFilter || 'all') === f[0] ? PILL_ON : PILL_OFF) + 'font-size:14px;padding:0 14px;',
+      pick: () => this.setState({ recFilter: f[0] })
+    }));
+    const recipeGroups = ['b', 'l', 'd'].filter((t) => (s.recFilter || 'all') === 'all' || s.recFilter === t).map((t) => ({
+      title: TYPE_TITLE[t],
+      items: RECIPES.filter((r) => r.t === t && this.allowed(r, s.excl)).map(recipeItem)
+    }));
+    const myRecipeRows = s.myRecipes.map((r) => ({
+      name: r.n,
+      slot: SLOT_NAME[r.t],
+      kcal: num(r.k),
+      price: money(this.rcost(r, n, mult)),
+      time: bn(r.m) + ' মিনিট',
+      removeLabel: r.n + ' মুছে ফেলুন',
+      open: () => this.openRecipe(r.id),
+      openLabel: r.n + ': প্লেট দেখুন',
+      edit: () => this.setState({ recOpen: true, recError: '', recForm: { id: r.id, n: r.n, t: r.t, m: r.m, k: r.k, cost: r.cost, ing: r.ingText || '' } }),
+      remove: () => {
+        const rest = this.state.myRecipes.filter((x) => x.id !== r.id);
+        const saved = Object.assign({}, this.state.saved);
+        delete saved[r.id];
+        this.applyPlan({ myRecipes: rest, saved: saved, recForm: Object.assign({}, BLANK_FORM), recOpen: false });
+      }
+    }));
+
+    const rf = s.recForm;
+    const recTypePills = [['b', 'নাস্তা'], ['l', 'দুপুর'], ['d', 'রাত']].map((o) => ({
+      label: o[1], on: rf.t === o[0], style: rf.t === o[0] ? PILL_ON : PILL_OFF,
+      pick: () => this.setForm({ t: o[0] })
+    }));
+    const recSteppers = [
+      { label: 'ক্যালোরি (প্রতি জন)', value: num(rf.k), dec: () => this.setForm({ k: Math.max(50, rf.k - 50) }), inc: () => this.setForm({ k: Math.min(2000, rf.k + 50) }), decLabel: 'ক্যালোরি কমান', incLabel: 'ক্যালোরি বাড়ান' },
+      { label: 'সময়', value: bn(rf.m) + ' মিনিট', dec: () => this.setForm({ m: Math.max(5, rf.m - 5) }), inc: () => this.setForm({ m: Math.min(240, rf.m + 5) }), decLabel: 'সময় কমান', incLabel: 'সময় বাড়ান' },
+      { label: 'খরচ (৪ জন)', value: money(rf.cost), dec: () => this.setForm({ cost: Math.max(10, rf.cost - 10) }), inc: () => this.setForm({ cost: Math.min(3000, rf.cost + 10) }), decLabel: 'খরচ কমান', incLabel: 'খরচ বাড়ান' }
+    ];
+
+    const tabDefs = [['family', 'ফ্যামিলি', sizeText], ['budget', 'বাজেট', 'Budget'], ['grocery', 'লিস্ট', 'Grocery'], ['recipes', 'রেসিপি', 'Recipes'], ['plan', 'প্ল্যান', 'Plan']];
+    const tabs = tabDefs.map((t) => ({
+      bn: t[1], en: t[2], on: s.tab === t[0],
+      style: TAB_BASE + 'color:' + (s.tab === t[0] ? '#2E5F1F' : '#55605A') + ';border-top:3px solid ' + (s.tab === t[0] ? '#3F7D2B' : 'transparent') + ';',
+      pick: () => this.setState({ tab: t[0], popup: false, recPopup: null })
+    }));
+
+    const steppers = [
+      { label: 'বয়স', value: bn(sm.age) + ' বছর', dec: () => this.updateMember({ age: Math.max(2, sm.age - 1) }), inc: () => this.updateMember({ age: Math.min(100, sm.age + 1) }), decLabel: 'বয়স কমান', incLabel: 'বয়স বাড়ান' },
+      { label: 'ওজন', value: bn(sm.w) + ' কেজি', dec: () => this.updateMember({ w: Math.max(10, sm.w - 1) }), inc: () => this.updateMember({ w: Math.min(200, sm.w + 1) }), decLabel: 'ওজন কমান', incLabel: 'ওজন বাড়ান' },
+      { label: 'উচ্চতা', value: bn(sm.h) + ' সেমি', dec: () => this.updateMember({ h: Math.max(80, sm.h - 1) }), inc: () => this.updateMember({ h: Math.min(220, sm.h + 1) }), decLabel: 'উচ্চতা কমান', incLabel: 'উচ্চতা বাড়ান' }
+    ];
+    const pills = (list, key) => list.map((o) => ({
+      label: o[1],
+      on: sm[key] === o[0],
+      style: sm[key] === o[0] ? PILL_ON : PILL_OFF,
+      pick: () => { const patch = {}; patch[key] = o[0]; this.updateMember(patch); }
+    }));
+    const memberCards = s.members.map((m) => ({
+      name: m.name,
+      meta1: bn(m.age) + ' বছর',
+      meta2: bn(m.w) + ' কেজি',
+      target: num(this.calcTarget(m)),
+      on: m.id === s.selMember,
+      style: (m.id === s.selMember ? MEM_ON : MEM_OFF) + 'padding-right:70px;',
+      pick: () => this.setState({ selMember: m.id }),
+      hasPhoto: !!m.photo, noPhoto: !m.photo, photo: m.photo || '',
+      initial: (m.name || '?').trim().charAt(0) || '?',
+      avLabel: m.name + '-এর ছবি ' + (m.photo ? 'দেখুন' : 'যোগ করুন'),
+      openPhoto: () => this.setState({ memPopup: m.id, selMember: m.id })
+    }));
+
+    const setPhoto = (id, url) => this.setState({ members: this.state.members.map((x) => (x.id === id ? Object.assign({}, x, { photo: url }) : x)) });
+    const mp0 = s.members.find((m) => m.id === s.memPopup);
+    const mp = mp0 ? {
+      name: mp0.name, age: bn(mp0.age) + ' বছর', w: bn(mp0.w) + ' কেজি', h: bn(mp0.h) + ' সেমি',
+      target: num(this.calcTarget(mp0)), hasPhoto: !!mp0.photo, noPhoto: !mp0.photo, photo: mp0.photo || '',
+      initial: (mp0.name || '?').trim().charAt(0) || '?',
+      remove: () => setPhoto(mp0.id, '')
+    } : { name: '', age: '', w: '', h: '', target: '', hasPhoto: false, noPhoto: true, photo: '', initial: '', remove: () => {} };
+
+    const selDishPhoto = s.dishPhotos[pr.id] || DISH_IMG[pr.id] || '';
+    const selOwnPhoto = !!s.dishPhotos[pr.id];
+
+    const priceGroups = CATS.filter((c) => c[0] !== 'mine').map((c) => ({
+      title: c[1],
+      items: Object.keys(ING).filter((k) => ING[k].c === c[0]).map((id) => {
+        const ov = s.priceOv[id];
+        const edited = ov !== undefined && ov !== '';
+        return {
+          name: ING[id].n, unit: 'প্রতি ' + ING[id].u, inputId: 'price_' + id,
+          value: edited ? String(ov) : String(ING[id].p),
+          inputStyle: 'box-sizing:border-box;width:92px;min-height:44px;padding:0 10px;border-radius:10px;font-size:17px;font-weight:600;text-align:right;color:#1E2A22;background:#FFFFFF;border:' + (edited ? '2px solid #3F7D2B' : '1.5px solid #C9C3B3'),
+          set: (e) => { const o = Object.assign({}, this.state.priceOv); o[id] = e.target.value; this.setState({ priceOv: o }); }
+        };
+      })
+    }));
+
+    const BTN = 'min-height:44px;padding:0 16px;border-radius:999px;font-size:15px;font-weight:600;';
+    const wsKey = s.weekStart;
+    const wsDate = pkey(wsKey);
+    const today = new Date();
+    const todayKey = dkey(today);
+    const vm = s.viewMonth || wsKey.slice(0, 7);
+    const vmY = Number(vm.slice(0, 4));
+    const vmM = Number(vm.slice(5, 7)) - 1;
+    const sats = [];
+    let sd0 = new Date(vmY, vmM, 1);
+    sd0 = addDays(sd0, (6 - sd0.getDay() + 7) % 7);
+    while (sd0.getMonth() === vmM) { sats.push(sd0); sd0 = addDays(sd0, 7); }
+    const rowBase = 'display:flex;align-items:center;justify-content:space-between;gap:10px;border-radius:14px;padding:8px 12px;box-sizing:border-box;width:100%;min-height:52px;text-align:left;cursor:pointer;color:#1E2A22;font-family:inherit;';
+    const rowsRaw = sats.map((sd, i) => {
+      const key = dkey(sd);
+      const log = s.weekLog[key];
+      const isCur = key === wsKey;
+      const amountNum = log ? log.total : weekTotal;
+      const range = dshort(sd) + ' – ' + dshort(addDays(sd, 6));
+      const sub = log ? ('সেভ হয়েছে · কেনা ' + money(log.spent)) : (isCur ? 'খোলা আছে · আনুমানিক' : 'আনুমানিক');
+      const style = rowBase + (isCur ? 'background:#FFFFFF;border:2px solid #3F7D2B;' : (log ? 'background:#EAF3E2;border:1px solid #CFE2C2;' : 'background:#FAF8F2;border:1px dashed #C9C3B3;'));
+      return { label: 'সপ্তাহ ' + bn(i + 1) + ' · ' + range, sub: sub, amountNum: amountNum, amount: money(amountNum), rowStyle: style, on: isCur, pick: () => this.selectWeek(key), aria: 'সপ্তাহ ' + bn(i + 1) + ', ' + range + (log ? ', সেভ করা' : ', সেভ করা নেই') };
+    });
+    let monthSum = 0;
+    let savedCount = 0;
+    rowsRaw.forEach((r) => { monthSum += r.amountNum; });
+    sats.forEach((sd) => { if (s.weekLog[dkey(sd)]) savedCount++; });
+    const curLog = s.weekLog[wsKey];
+    const logRangeText = dshort(wsDate) + ' – ' + dshort(addDays(wsDate, 6));
+    const savedItems = curLog ? (curLog.items || []).map((i) => ({ name: i.n, qty: i.q, price: money(i.c), mark: i.done ? 'কেনা' : 'বাকি', markStyle: 'flex:none;font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px;' + (i.done ? 'background:#E8F1E1;color:#2E5F1F;' : 'background:#F5EFDD;color:#5A4A1A;') })) : [];
+    const saveWeekNow = () => {
+      const snap = [];
+      items.forEach((it) => snap.push({ id: it.id, n: it.ing.n, q: (it.ing.pk ? bn(it.q) : bn(String(it.q).replace(/\.0$/, ''))) + ' ' + it.ing.u, c: Math.round(this.itemCost(it, mult)), done: !!this.state.checked[it.id] }));
+      this.state.extras.forEach((x) => snap.push({ id: x.id, n: x.name, q: x.qty || '', c: Math.round(Number(x.price) || 0), done: !!this.state.checked[x.id] }));
+      const log = Object.assign({}, this.state.weekLog);
+      log[wsKey] = { total: Math.round(weekTotal), spent: Math.round(spent), t: Date.now(), items: snap };
+      this.setState({ weekLog: log });
+    };
+    const removeLogNow = () => { const log = Object.assign({}, this.state.weekLog); delete log[wsKey]; this.setState({ weekLog: log }); };
+    const shiftMonth = (k) => { const dd = new Date(vmY, vmM + k, 1); this.setState({ viewMonth: dd.getFullYear() + '-' + pad2(dd.getMonth() + 1) }); };
+
+    const calY = Number((s.calMonth || todayKey.slice(0, 7)).slice(0, 4));
+    const calM = Number((s.calMonth || todayKey.slice(0, 7)).slice(5, 7)) - 1;
+    const calFirst = new Date(calY, calM, 1);
+    const calLead = (calFirst.getDay() + 1) % 7;
+    const calDim = new Date(calY, calM + 1, 0).getDate();
+    const calCells = [];
+    for (let i = 0; i < calLead; i++) calCells.push({ blank: true, real: false });
+    for (let dnum = 1; dnum <= calDim; dnum++) {
+      const dt = new Date(calY, calM, dnum);
+      const wk = dkey(satOf(dt));
+      const inWeek = wk === wsKey;
+      const isToday = dkey(dt) === todayKey;
+      const hasLog = !!s.weekLog[wk];
+      calCells.push({
+        blank: false, real: true, text: bn(dnum), on: inWeek,
+        label: DAYS_FULL[(dt.getDay() + 1) % 7] + ', ' + bn(dnum) + ' ' + MONTHS[calM] + (isToday ? ' (আজ)' : '') + (hasLog ? ', এই সপ্তাহের হিসাব সেভ করা' : ''),
+        style: 'min-height:44px;border-radius:10px;font-size:15px;font-weight:' + (isToday ? '800' : '500') + ';cursor:pointer;padding:0;color:#1E2A22;box-sizing:border-box;background:' + (inWeek ? '#CFE2C2' : '#FFFFFF') + ';border:' + (isToday ? '2px solid #2E5F1F' : '1px solid #E3DECF') + ';border-bottom:' + (hasLog ? '5px solid #C98A00' : (isToday ? '2px solid #2E5F1F' : '1px solid #E3DECF')),
+        pick: () => { if (wk !== this.state.weekStart) this.selectWeek(wk); this.setState({ sel: ((dt.getDay() + 1) % 7) * 3, planView: 'week' }); }
+      });
+    }
+
+    const todayDi = (today.getDay() + 1) % 7;
+    const nowSlot = today.getHours() < 11 ? 0 : (today.getHours() < 16 ? 1 : 2);
+    const SLOT_TIME = ['নাস্তার', 'দুপুরের খাবারের', 'রাতের খাবারের'];
+    const SLOT_FOR = ['সকালের নাস্তার জন্য', 'দুপুরের খাবারের জন্য', 'রাতের খাবারের জন্য'];
+    const remSlot = s.remindSlot === null || s.remindSlot === undefined ? nowSlot : s.remindSlot;
+    const remindLine = (remSlot === nowSlot ? 'এখন ' + SLOT_TIME[nowSlot] + ' সময়। ' : '') + SLOT_FOR[remSlot] + ' এই জিনিসগুলো লাগবে:';
+    const remindPills = SLOTS.map((sl, i) => ({
+      label: sl[1] + (i === nowSlot ? ' · এখন' : ''), on: remSlot === i,
+      style: (remSlot === i ? PILL_ON : PILL_OFF).replace('padding:0 18px', 'padding:0 14px'),
+      pick: () => this.setState({ remindSlot: i, sel: todayDi * 3 + i })
+    }));
+
+    const ingRows = pr.custom ? [] : pr.ing.map((x) => ({ name: ING[x[0]].n, qty: fmtQty(ING[x[0]], x[1] * (n / 4)) }));
+
+    const catRaw = CATS.map((c) => {
+      const its = items.filter((it) => it.ing.c === c[0]);
+      if (!its.length) return null;
+      const mrows = its.map((it) => ({ it: it, cost: this.itemCost(it, mult) * 30 / 7, q: it.q * 30 / 7 })).sort((a, b) => b.cost - a.cost);
+      let sum = 0;
+      mrows.forEach((m) => { sum += m.cost; });
+      return { title: c[1], sum: sum, rows: mrows.slice(0, 6).map((m) => ({ name: m.it.ing.n, qty: fmtQty(m.it.ing, m.q), cost: money(m.cost) })) };
+    }).filter(Boolean);
+    let catSum = 0;
+    catRaw.forEach((c) => { catSum += c.sum; });
+    const catRows = catRaw.map((c) => ({ title: c.title, total: money(c.sum), pct: bn(Math.round(c.sum * 100 / (catSum || 1))) + '%', barStyle: 'display:block;height:100%;border-radius:999px;background:#3F7D2B;width:' + Math.round(c.sum * 100 / (catSum || 1)) + '%', rows: c.rows }));
+    const leftNum = s.budget - catSum - Math.round(extrasSum * 30 / 7);
+    const budgetLeftText = leftNum >= 0 ? 'বাজেটে বাকি থাকছে ' + money(leftNum) : money(-leftNum) + ' বাজেটের বেশি';
+
+    const dishId = pr.id;
+    const setDish = (url) => { const d2 = Object.assign({}, this.state.dishPhotos); if (url) d2[dishId] = url; else delete d2[dishId]; this.setState({ dishPhotos: d2 }); };
+
+    const inApp = s.screen === 'app';
+    return {
+      fitNote: fitNote,
+      saveWarn: s.saveWarn,
+      cloudSignedOut: s.cloudOn && !s.cloudUser,
+      cloudSignedIn: s.cloudOn && !!s.cloudUser,
+      cloudName: s.cloudUser ? (s.cloudUser.name || s.cloudUser.email) : '',
+      cloudMsg: s.cloudMsg,
+      cloudSignIn: () => { const c = cloudApi(); if (c) c.signIn().catch(() => this.setState({ cloudMsg: 'লগইন করা যায়নি। আবার চেষ্টা করুন।' })); },
+      cloudSignOut: () => { const c = cloudApi(); if (c) c.signOut(); },
+      cloudSaveNow: () => { this.cloudPush(); },
+      askResetOff: !s.confirmReset,
+      confirmReset: s.confirmReset,
+      askReset: () => this.setState({ confirmReset: true }),
+      cancelReset: () => this.setState({ confirmReset: false }),
+      doReset: () => { clearTimeout(this.__saveTimer); try { window.localStorage.removeItem(STORE_KEY); } catch (e) { /* ignore */ } try { window.location.reload(); } catch (e) { /* ignore */ } },
+      smHasPhoto: !!sm.photo, smNoPhoto: !sm.photo, smPhoto: sm.photo || '',
+      smInitial: (sm.name || '?').trim().charAt(0) || '?',
+      smAvLabel: sm.name + '-এর প্রোফাইল কার্ড খুলুন',
+      openSmPhoto: () => this.setState({ memPopup: sm.id }),
+      smCam: (e) => pickFile(e, (u) => setPhoto(sm.id, u)),
+      smGal: (e) => pickFile(e, (u) => setPhoto(sm.id, u)),
+      showMemPopup: s.screen === 'app' && !!mp0,
+      closeMem: () => this.setState({ memPopup: null }),
+      mp: mp,
+      mpCam: (e) => pickFile(e, (u) => { if (mp0) setPhoto(mp0.id, u); }),
+      mpGal: (e) => pickFile(e, (u) => { if (mp0) setPhoto(mp0.id, u); }),
+      hasDishPhoto: !!selDishPhoto, noDishPhoto: !selDishPhoto, dishPhoto: selDishPhoto, hasOwn: selOwnPhoto, noOwn: !selOwnPhoto,
+      dishAlt: pr.n + (selOwnPhoto ? ' এর আপনার তোলা ছবি' : ' এর ছবি'),
+      dishCam: (e) => pickFile(e, setDish),
+      dishGal: (e) => pickFile(e, setDish),
+      dishRemove: () => setDish(''),
+      showPrices: s.showPrices,
+      pricesCaret: s.showPrices ? '▴' : '▾',
+      togglePrices: () => this.setState({ showPrices: !this.state.showPrices }),
+      priceGroups: priceGroups,
+      resetPrices: () => this.setState({ priceOv: {} }),
+      monthRows: rowsRaw,
+      monthTitle: MONTHS[vmM] + ' ' + bn(vmY),
+      prevMonth: () => shiftMonth(-1),
+      nextMonth: () => shiftMonth(1),
+      monthSumText: money(monthSum),
+      monthSumLabel: 'মাসের মোট (সেভ + আনুমানিক)',
+      savedCountText: bn(savedCount) + '/' + bn(sats.length) + ' সপ্তাহ সেভ হয়েছে',
+      logHeading: 'সপ্তাহ: ' + logRangeText,
+      hasLog: !!curLog, noLog: !curLog,
+      logLine: curLog ? ('মোট ' + money(curLog.total) + ' · কেনা ' + money(curLog.spent) + ' · বাকি ' + money(Math.max(0, curLog.total - curLog.spent))) : '',
+      savedItems: savedItems,
+      saveText: curLog ? 'আপডেট করে সেভ করুন' : 'এই সপ্তাহ সেভ করুন',
+      saveStyle: BTN + 'border:none;background:#3F7D2B;color:#FFFFFF;cursor:pointer;',
+      saveWeek: saveWeekNow,
+      removeLog: removeLogNow,
+      calOpen: s.calOpen,
+      toggleCal: () => this.setState({ calOpen: !this.state.calOpen, calMonth: this.state.calMonth || todayKey.slice(0, 7) }),
+      calTitle: MONTHS[calM] + ' ' + bn(calY),
+      calPrev: () => { const dd = new Date(calY, calM - 1, 1); this.setState({ calMonth: dd.getFullYear() + '-' + pad2(dd.getMonth() + 1) }); },
+      calNext: () => { const dd = new Date(calY, calM + 1, 1); this.setState({ calMonth: dd.getFullYear() + '-' + pad2(dd.getMonth() + 1) }); },
+      calToday: () => { this.setState({ calMonth: todayKey.slice(0, 7) }); this.selectWeek(dkey(satOf(new Date()))); this.setState({ sel: todayDi * 3 }); },
+      calHead: DAYS.map((h) => ({ h: h })),
+      calCells: calCells,
+      calWeekText: 'বাছাই করা সপ্তাহ: ' + logRangeText,
+      remind: s.remind,
+      todayLine: 'আজ ' + DAYS_FULL[todayDi] + ' · ' + bn(today.getDate()) + ' ' + MONTHS[today.getMonth()],
+      remindLine: remindLine,
+      remindPills: remindPills,
+      ingRows: ingRows,
+      ingTitle: 'লাগবে · ' + sizeText + ' মিলে',
+      customIng: !!pr.custom,
+      catRows: catRows,
+      budgetLeftText: budgetLeftText,
+      chartOpen: s.chartOpen,
+      chartClosed: !s.chartOpen,
+      chartToggleText: s.chartOpen ? 'চার্ট লুকান' : 'চার্ট দেখুন',
+      toggleChart: () => this.setState({ chartOpen: !this.state.chartOpen }),
+      showWelcome: s.screen === 'welcome',
+      showMain: inApp,
+      showFamily: inApp && s.tab === 'family',
+      showBudget: inApp && s.tab === 'budget',
+      showGrocery: inApp && s.tab === 'grocery',
+      showRecipes: inApp && s.tab === 'recipes',
+      showPlan: inApp && s.tab === 'plan',
+      pageTitle: titles[s.tab],
+      goApp: () => { this.setState({ screen: 'app', tab: 'family' }); this.openReminder(false); },
+      goBudget: () => this.setState({ tab: 'budget' }),
+      tabs: tabs,
+      storeName: store.n,
+      sizeText: sizeText,
+      famTarget: num(famNeed),
+
+      sm: sm,
+      memberCards: memberCards,
+      steppers: steppers,
+      sexPills: pills(SEX, 'sex'),
+      actPills: pills(ACT, 'act'),
+      goalPills: pills(GOAL, 'goal'),
+      dietList: dietList,
+      canRemove: n > 1,
+      setName: (e) => this.updateMember({ name: e.target.value }),
+      addMember: () => {
+        const id = this.state.nextId;
+        const m = { id: id, name: 'সদস্য ' + bn(id), age: 30, sex: 'm', w: 65, h: 165, act: 'mod', goal: 'keep' };
+        this.applyPlan({ members: this.state.members.concat([m]), nextId: id + 1, selMember: id });
+      },
+      removeMember: () => {
+        const rest = this.state.members.filter((m) => m.id !== sm.id);
+        this.applyPlan({ members: rest, selMember: rest[0].id });
+      },
+
+      monthBudgetText: money(s.budget),
+      monthTotalText: money(monthTotal),
+      weekTotalText: money(weekTotal),
+      spentText: money(spent),
+      remainText: money(remain),
+      spentPct: (weekTotal > 0 ? Math.min(100, Math.round(spent * 100 / weekTotal)) : 0) + '%',
+      pct: pct,
+      barStyle: 'height:100%;border-radius:999px;width:' + pct + '%;background:' + (diff >= 0 ? '#3F7D2B' : '#A8321F'),
+      budgetStatus: diff >= 0 ? money(diff) + ' মাসিক বাজেটের নিচে আছে।' : money(-diff) + ' বাজেটের বেশি হচ্ছে। বাজেট বাড়ান বা সস্তা দোকান বেছে নিন।',
+      budgetStatusStyle: 'margin:0;font-size:16px;font-weight:600;color:' + (diff >= 0 ? '#2E5F1F' : '#9B2C22'),
+      budgetDec: () => this.applyPlan({ budget: Math.max(2000, this.state.budget - 500) }),
+      budgetInc: () => this.applyPlan({ budget: Math.min(80000, this.state.budget + 500) }),
+      storeList: storeList,
+
+      checkedText: bn(doneCount) + '/' + bn(items.length + s.extras.length) + ' কেনা হয়েছে',
+      groceryGroups: groceryGroups,
+      extraRows: extraRows,
+      hasExtras: s.extras.length > 0,
+      showAddItem: s.showAddItem,
+      addItemCaret: s.showAddItem ? '▴' : '▾',
+      toggleAddItem: () => this.setState({ showAddItem: !this.state.showAddItem, draftError: '' }),
+      draft: s.draft,
+      draftError: s.draftError,
+      setDraftName: (e) => this.setState({ draft: Object.assign({}, this.state.draft, { name: e.target.value }), draftError: '' }),
+      setDraftQty: (e) => this.setState({ draft: Object.assign({}, this.state.draft, { qty: e.target.value }) }),
+      setDraftPrice: (e) => this.setState({ draft: Object.assign({}, this.state.draft, { price: e.target.value }) }),
+      cancelAdd: () => this.setState({ showAddItem: false, draft: { name: '', qty: '', price: '' }, draftError: '' }),
+      addExtra: () => {
+        const d = this.state.draft;
+        const name = (d.name || '').trim();
+        if (!name) { this.setState({ draftError: 'আইটেমের নাম লিখুন।' }); return; }
+        const price = Math.max(0, Math.round(Number(d.price) || 0));
+        const id = 'x' + this.state.extraSeq;
+        this.setState({
+          extras: this.state.extras.concat([{ id: id, name: name, qty: (d.qty || '').trim(), price: price }]),
+          extraSeq: this.state.extraSeq + 1,
+          draft: { name: '', qty: '', price: '' }, draftError: '', showAddItem: false
+        });
+      },
+
+      recOpen: s.recOpen,
+      recCaret: s.recOpen ? '▴' : '▾',
+      recButtonText: rf.id ? 'রেসিপি এডিট করুন' : '+ নিজের রেসিপি তৈরি করুন',
+      recSaveText: rf.id ? 'পরিবর্তন সেভ করুন' : 'রেসিপি সেভ করুন',
+      toggleRecipeForm: () => this.setState({ recOpen: !this.state.recOpen, recError: '', recForm: this.state.recOpen ? Object.assign({}, BLANK_FORM) : this.state.recForm }),
+      rf: rf,
+      setRecName: (e) => this.setForm({ n: e.target.value }),
+      setRecIng: (e) => this.setForm({ ing: e.target.value }),
+      recTypePills: recTypePills,
+      recSteppers: recSteppers,
+      recError: s.recError,
+      cancelRecipe: () => this.setState({ recOpen: false, recError: '', recForm: Object.assign({}, BLANK_FORM) }),
+      saveRecipe: () => {
+        const f = this.state.recForm;
+        const name = (f.n || '').trim();
+        if (!name) { this.setState({ recError: 'রেসিপির নাম লিখুন।' }); return; }
+        if (f.id) {
+          const list = this.state.myRecipes.map((r) => (r.id === f.id ? Object.assign({}, r, { n: name, t: f.t, m: f.m, k: f.k, cost: f.cost, ingText: f.ing }) : r));
+          this.setState({ myRecipes: list, recOpen: false, recForm: Object.assign({}, BLANK_FORM), recError: '' });
+        } else {
+          const id = 'c' + this.state.recSeq;
+          const r = { id: id, n: name, t: f.t, m: f.m, k: f.k, cost: f.cost, ingText: f.ing, ing: [], custom: true };
+          this.setState({ myRecipes: this.state.myRecipes.concat([r]), recSeq: this.state.recSeq + 1, recOpen: false, recForm: Object.assign({}, BLANK_FORM), recError: '' });
+        }
+      },
+      hasMine: s.myRecipes.length > 0,
+      myRecipeRows: myRecipeRows,
+      recipeGroups: recipeGroups,
+      recFilters: recFilters,
+
+      showWeek: s.planView === 'week',
+      showDay: s.planView === 'day',
+      avgPlanned: num(avgPlanned),
+      avgPct: avgPct,
+      avgBarStyle: 'height:100%;border-radius:999px;width:' + avgPct + '%;background:' + (avgGap.over ? '#A8451A' : '#3F7D2B'),
+      avgStatus: avgGap.text,
+      avgStatusStyle: 'margin:0;font-size:16px;font-weight:600;color:' + (avgGap.over ? '#9B2C22' : '#2E5F1F'),
+      weekRows: weekRows,
+      dayMeals: dayMeals,
+      todayMeals: todayMeals,
+      backWeek: () => this.setState({ planView: 'week', popup: false }),
+      prevDay: () => this.setState({ sel: ((selDi + 6) % 7) * 3 }),
+      nextDay: () => this.setState({ sel: ((selDi + 1) % 7) * 3 }),
+      selDayName: DAYS_FULL[selDi] + ' · ' + bn(addDays(pkey(s.weekStart), selDi).getDate()) + ' ' + MONTHS[addDays(pkey(s.weekStart), selDi).getMonth()],
+      selDayPlanned: num(selDayPlanned),
+      selDayPct: selDayPct,
+      selDayBarStyle: 'height:100%;border-radius:999px;width:' + selDayPct + '%;background:' + (selGap.over ? '#A8451A' : '#3F7D2B'),
+      selDayStatus: selGap.text,
+      selDayStatusStyle: 'margin:0;font-size:15px;font-weight:600;color:' + (selGap.over ? '#9B2C22' : '#2E5F1F'),
+      regen: () => this.applyPlan({ seed: this.state.seed + 1 }),
+
+      showPopup: inApp && (s.remind || (s.tab === 'plan' && s.popup) || (s.tab === 'recipes' && recMode)),
+      dlgKey: (e) => {
+        if (e.key === 'Escape') { e.preventDefault(); this.setState({ popup: false, recPopup: null, remind: false, memPopup: null }); return; }
+        if (e.key !== 'Tab') return;
+        const d = e.currentTarget;
+        const f = Array.prototype.filter.call(d.querySelectorAll('button,input,select,textarea,a[href]'), (x) => !x.disabled && x.offsetParent !== null);
+        if (!f.length) return;
+        const first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && (document.activeElement === first || document.activeElement === d)) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      },
+      closePopup: () => this.setState({ popup: false, recPopup: null, remind: false }),
+      recMode: recMode,
+      planMode: !recMode,
+      addSlotPills: SLOTS.map((sl, i) => ({ label: sl[1], on: s.addSlot === i, style: (s.addSlot === i ? PILL_ON : PILL_OFF).replace('padding:0 18px', 'padding:0 14px'), pick: () => this.setState({ addSlot: i }) })),
+      addDayPills: DAYS.map((dn, i) => ({ label: dn, on: s.addDay === i, style: (s.addDay === i ? PILL_ON : PILL_OFF).replace('padding:0 18px', 'padding:0 10px') + 'min-width:44px;', pick: () => this.setState({ addDay: i }) })),
+      addToPlan: () => {
+        const idx = this.state.addDay * 3 + this.state.addSlot;
+        const plan = this.state.plan.slice();
+        plan[idx] = pr.id;
+        const sv = Object.assign({}, this.state.saved);
+        sv[pr.id] = true;
+        this.setState({ plan: plan, saved: sv, tab: 'plan', planView: 'day', sel: idx, popup: false, recPopup: null });
+      },
+      addToPlanText: 'সেভ করে ' + DAYS_FULL[s.addDay] + 'র ' + SLOT_NAME[SLOTS[s.addSlot][0]] + 'য় যোগ করুন',
+      selSlot: recMode ? (SLOT_NAME[pr.t] + ' · রেসিপি') : (DAYS_FULL[selDi] + ' · ' + selType[1]),
+      selName: pr.n,
+      selMeta: bn(pr.m) + ' মিনিট · প্রতি জনে ' + num(pr.k) + ' ক্যালোরি · ' + sizeText + ' মিলে ' + num(pr.k * n) + ' ক্যালোরি',
+      selIngredients: pr.custom ? ('উপকরণ: ' + (pr.ingText || 'নিজের রেসিপি')) : ('লাগবে: ' + pr.ing.map((x) => ING[x[0]].n).join(', ')),
+      plateItems: plateItems,
+      plateAlt: plateAlt,
+      swap: () => {
+        const type = SLOTS[this.state.sel % 3][0];
+        const p = this.pool(type, this.state.excl, this.state.myRecipes);
+        const cur = this.state.plan[this.state.sel];
+        const pos = p.findIndex((r) => r.id === cur);
+        const plan = this.state.plan.slice();
+        plan[this.state.sel] = p[(pos + 1) % p.length].id;
+        this.setState({ plan: plan });
+      },
+      selSaved: isSaved,
+      selSaveLabel: isSaved ? 'সেভড · Saved' : 'সেভ করুন · Save',
+      selSaveStyle: PILL_BASE + (isSaved ? 'border:1.5px solid #3F7D2B;background:#EAF3E2;color:#2E5F1F;' : 'border:1.5px solid #C9C3B3;background:#FFFFFF;color:#1E2A22;') + 'font-size:15px;padding:0 16px;',
+      selSave: () => { const m2 = Object.assign({}, this.state.saved); m2[pr.id] = !m2[pr.id]; this.setState({ saved: m2 }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

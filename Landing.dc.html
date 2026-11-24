@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<title>Thala ল্যান্ডিং পেজ</title>
+<script src="./support.js"></script>
+<script>
+/* Standalone hosting: this file is a Claude Design page. If it is opened directly (no design runtime), hand over to index.html, which renders it with dc-lite.js. */
+(function () {
+  if (typeof DCLogic !== 'undefined' || window.top !== window) return;
+  var m = /([A-Za-z]+)\.dc(?:\.html)?\/?$/.exec(location.pathname);
+  if (!m) return;
+  var name = m[1].charAt(0).toUpperCase() + m[1].slice(1).toLowerCase();
+  location.replace(location.pathname.replace(/[^\/]*$/, '') + 'index.html?page=' + name);
+})();
+</script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'Noto Sans Bengali','Noto Sans',system-ui,sans-serif;background:#FAF8F2;color:#1E2A22}
+a{color:#2E5F1F}a:hover{color:#1E4214}
+summary{cursor:pointer}
+summary::-webkit-details-marker{display:none}
+</style>
+</helmet>
+<div style="width:100%;background:#FAF8F2;color:#1E2A22;font-family:'Noto Sans Bengali','Noto Sans',system-ui,sans-serif">
+
+<header style="max-width:1120px;margin:0 auto;box-sizing:border-box;padding:18px 20px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 24px">
+<a href="#top" style="font-size:26px;font-weight:700;color:#2E5F1F;text-decoration:none">Thala</a>
+<nav aria-label="প্রধান মেনু" style="display:flex;flex-wrap:wrap;gap:4px 20px;align-items:center">
+<a href="#how" style="font-size:16px;font-weight:500;text-decoration:none;color:#1E2A22;padding:10px 0">How it works</a>
+<a href="#features" style="font-size:16px;font-weight:500;text-decoration:none;color:#1E2A22;padding:10px 0">Features</a>
+<a href="#recipes" style="font-size:16px;font-weight:500;text-decoration:none;color:#1E2A22;padding:10px 0">Recipes</a>
+<a href="#faq" style="font-size:16px;font-weight:500;text-decoration:none;color:#1E2A22;padding:10px 0">FAQ</a>
+<a href="App.dc.html"style="display:inline-flex;align-items:center;min-height:44px;padding:0 20px;border-radius:999px;background:#3F7D2B;color:#FFFFFF;font-size:16px;font-weight:600;text-decoration:none">Get started</a>
+</nav>
+</header>
+
+<section id="top" style="max-width:1120px;margin:0 auto;box-sizing:border-box;padding:40px 20px 64px;display:flex;flex-wrap:wrap;align-items:center;gap:40px">
+<div style="flex:1 1 440px;min-width:0;display:flex;flex-direction:column;gap:20px">
+<span style="font-size:17px;font-weight:600;color:#2E5F1F">আপনার ৭ দিনের মিল প্ল্যান, কয়েক সেকেন্ডে</span>
+<h1 style="margin:0;font-size:68px;line-height:1.08;font-weight:700;color:#1E2A22">Eat well,<br>spend less.</h1>
+<p style="margin:0;font-size:21px;line-height:1.6;color:#55605A;max-width:520px">ফ্যামিলির সবার ক্যালোরি লক্ষ্য আর মাসিক বাজেট বলুন। Thala সাজিয়ে দেবে ৭ দিনের খাবারের প্ল্যান আর টাকার হিসাবসহ গ্রোসারি লিস্ট।</p>
+<div id="get" style="display:flex;flex-wrap:wrap;gap:12px">
+<a href="App.dc.html" style="display:inline-flex;align-items:center;min-height:56px;padding:0 26px;border-radius:14px;background:#1E2A22;color:#FFFFFF;font-size:18px;font-weight:600;text-decoration:none">অ্যাপ খুলুন · Open app</a>
+<a href="Main.dc.html" style="display:inline-flex;align-items:center;min-height:56px;padding:0 26px;border-radius:14px;background:#FFFFFF;color:#1E2A22;border:1.5px solid #1E2A22;font-size:18px;font-weight:600;text-decoration:none">ক্যালোরি ক্যালকুলেটর</a>
+</div>
+<span style="font-size:15px;color:#55605A">ফ্রি শুরু করা যায়। ফ্যামিলির প্রত্যেকের ক্যালোরি লক্ষ্যসহ।</span>
+</div>
+
+<div style="flex:1 1 340px;min-width:0;display:flex;justify-content:center">
+<div style="position:relative;width:100%;max-width:360px;background:#EAF3E2;border-radius:36px;padding:28px 20px;box-sizing:border-box">
+<div style="background:#FFFFFF;border-radius:28px;border:1px solid #E3DECF;padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 18px 40px rgba(46,95,31,0.18)">
+<span style="font-size:15px;color:#55605A">Agora · ৪ জন</span>
+<span style="font-size:19px;font-weight:700;line-height:1.35">৪ জন · দিনে ৮,২০০ ক্যালোরির লক্ষ্য</span>
+<div style="height:10px;border-radius:999px;background:#E9E4D6;overflow:hidden"><div style="height:100%;width:96%;border-radius:999px;background:#3F7D2B"></div></div>
+<div style="display:flex;gap:6px">
+<span style="flex:1;border:1px solid #D8D2C2;border-radius:10px;padding:8px;font-size:12.5px;line-height:1.3">পরোটা ও ডিম ভাজি<br><strong style="color:#2E5F1F">৫২০ kcal</strong></span>
+<span style="flex:1;border:2px solid #3F7D2B;background:#EAF3E2;border-radius:10px;padding:8px;font-size:12.5px;line-height:1.3">ভাত ও রুই মাছের ঝোল<br><strong style="color:#2E5F1F">৮২০ kcal</strong></span>
+<span style="flex:1;border:1px solid #D8D2C2;border-radius:10px;padding:8px;font-size:12.5px;line-height:1.3">রুটি ও মুরগির কারি<br><strong style="color:#2E5F1F">৭০০ kcal</strong></span>
+</div>
+<div style="display:flex;gap:6px">
+<span style="flex:1;border:1px solid #D8D2C2;border-radius:10px;padding:8px;font-size:12.5px;line-height:1.3">মুড়ি ও দুধ<br><strong style="color:#2E5F1F">৩০০ kcal</strong></span>
+<span style="flex:1;border:1px solid #D8D2C2;border-radius:10px;padding:8px;font-size:12.5px;line-height:1.3">খিচুড়ি ও ডিম ভুনা<br><strong style="color:#2E5F1F">৮৫০ kcal</strong></span>
+<span style="flex:1;border:1px solid #D8D2C2;border-radius:10px;padding:8px;font-size:12.5px;line-height:1.3">ভাত ও ডিমের ঝোল<br><strong style="color:#2E5F1F">৭৮০ kcal</strong></span>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<section id="how" style="background:#FFFFFF;border-top:1px solid #E3DECF;border-bottom:1px solid #E3DECF">
+<div style="max-width:1120px;margin:0 auto;box-sizing:border-box;padding:72px 20px;display:flex;flex-direction:column;gap:36px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<span style="font-size:16px;font-weight:600;color:#2E5F1F">How it works</span>
+<h2 style="margin:0;font-size:40px;line-height:1.25;font-weight:700">মিল প্ল্যানিং, এখন সহজ।</h2>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:20px">
+
+<div style="flex:1 1 300px;min-width:0;background:#FAF8F2;border:1px solid #E3DECF;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:14px">
+<span style="width:40px;height:40px;border-radius:999px;background:#3F7D2B;color:#FFFFFF;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700">১</span>
+<h3 style="margin:0;font-size:24px;font-weight:700">বাজার বেছে নিন <span style="font-size:16px;font-weight:500;color:#55605A">Pick your store</span></h3>
+<p style="margin:0;font-size:17px;line-height:1.6;color:#55605A">লোকাল বাজার বা পছন্দের সুপারশপ ঠিক করুন। প্ল্যান আর দামের হিসাব সেই অনুযায়ী সাজবে।</p>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<span style="padding:8px 14px;border-radius:999px;background:#FFFFFF;border:1px solid #D8D2C2;font-size:15px">লোকাল বাজার</span>
+<span style="padding:8px 14px;border-radius:999px;background:#EAF3E2;border:1.5px solid #3F7D2B;font-size:15px;font-weight:600">Agora</span>
+<span style="padding:8px 14px;border-radius:999px;background:#FFFFFF;border:1px solid #D8D2C2;font-size:15px">Shwapno</span>
+</div>
+</div>
+
+<div style="flex:1 1 300px;min-width:0;background:#FAF8F2;border:1px solid #E3DECF;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:14px">
+<span style="width:40px;height:40px;border-radius:999px;background:#3F7D2B;color:#FFFFFF;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700">২</span>
+<h3 style="margin:0;font-size:24px;font-weight:700">বাজেট ঠিক করুন <span style="font-size:16px;font-weight:500;color:#55605A">Set your budget</span></h3>
+<p style="margin:0;font-size:17px;line-height:1.6;color:#55605A">মাসে কত টাকা খরচ করবেন আর ফ্যামিলিতে কতজন, সেটা বলুন। যেকোনো সময় বদলানো যায়।</p>
+<span style="font-size:36px;font-weight:700;color:#2E5F1F">৳১৮,০০০ <span style="font-size:16px;font-weight:500;color:#55605A">/ মাস</span></span>
+</div>
+
+<div style="flex:1 1 300px;min-width:0;background:#FAF8F2;border:1px solid #E3DECF;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:14px">
+<span style="width:40px;height:40px;border-radius:999px;background:#3F7D2B;color:#FFFFFF;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700">৩</span>
+<h3 style="margin:0;font-size:24px;font-weight:700">প্ল্যান পান <span style="font-size:16px;font-weight:500;color:#55605A">Get your plan</span></h3>
+<p style="margin:0;font-size:17px;line-height:1.6;color:#55605A">নাস্তা, দুপুর আর রাত মিলিয়ে ৭ দিনের গ্রিড তৈরি। পছন্দ না হলে এক ট্যাপে রেসিপি বদলান।</p>
+<span style="font-size:18px;font-weight:600">৪ জন · দিনে ৮,২০০ ক্যালোরির লক্ষ্য</span>
+</div>
+
+</div>
+</div>
+</section>
+
+<section id="recipes" style="max-width:1120px;margin:0 auto;box-sizing:border-box;padding:72px 20px;display:flex;flex-wrap:wrap;align-items:center;gap:40px">
+<div style="flex:1 1 400px;min-width:0;display:flex;flex-direction:column;gap:16px">
+<span style="font-size:16px;font-weight:600;color:#2E5F1F">Recipe organiser</span>
+<h2 style="margin:0;font-size:40px;line-height:1.25;font-weight:700">পছন্দের রেসিপি সেভ করুন, যেখান থেকেই পান।</h2>
+<p style="margin:0;font-size:19px;line-height:1.65;color:#55605A">ফেসবুক বা ইউটিউবে ভালো কোনো রেসিপি পেলে শেয়ার করে Thala-তে সেভ করুন। উপকরণসহ সব এক জায়গায় থাকবে, আর পরের সপ্তাহের প্ল্যানে ঢুকিয়ে নেওয়া যাবে।</p>
+</div>
+<div style="flex:1 1 340px;min-width:0;display:flex;flex-direction:column;gap:12px">
+<div style="background:#FFFFFF;border:1px solid #E3DECF;border-radius:20px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+<div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:18px;font-weight:600">ভাত ও রুই মাছের ঝোল</span><span style="font-size:15px;color:#55605A">৪৫ মিনিট · ৬টি উপকরণ</span></div>
+<span style="padding:8px 14px;border-radius:999px;background:#EAF3E2;color:#2E5F1F;font-size:14px;font-weight:600">সেভড</span>
+</div>
+<div style="background:#FFFFFF;border:1px solid #E3DECF;border-radius:20px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+<div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:18px;font-weight:600">খিচুড়ি ও ডিম ভুনা</span><span style="font-size:15px;color:#55605A">৪০ মিনিট · ৬টি উপকরণ</span></div>
+<span style="padding:8px 14px;border-radius:999px;background:#EAF3E2;color:#2E5F1F;font-size:14px;font-weight:600">সেভড</span>
+</div>
+<div style="background:#FFFFFF;border:1px solid #E3DECF;border-radius:20px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+<div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:18px;font-weight:600">রুটি ও পটল-আলুর তরকারি</span><span style="font-size:15px;color:#55605A">৩৫ মিনিট · ৫টি উপকরণ</span></div>
+<span style="padding:8px 14px;border-radius:999px;background:#EAF3E2;color:#2E5F1F;font-size:14px;font-weight:600">সেভড</span>
+</div>
+</div>
+</section>
+
+<section style="background:#EAF3E2">
+<div style="max-width:1120px;margin:0 auto;box-sizing:border-box;padding:72px 20px;display:flex;flex-wrap:wrap;align-items:center;gap:40px">
+<div style="flex:1 1 340px;min-width:0;background:#FFFFFF;border-radius:28px;padding:22px;display:flex;flex-direction:column;gap:12px;box-shadow:0 14px 32px rgba(46,95,31,0.14)">
+<span style="font-size:32px;font-weight:700;color:#2E5F1F">৳১৭,৩৫০ <span style="font-size:16px;font-weight:500;color:#55605A">/ ৳১৮,০০০ (মাসে)</span></span>
+<span style="font-size:15px">Shopping at <strong>Agora</strong> · <span style="color:#2E5F1F;font-weight:700;text-decoration:underline">Compare</span></span>
+<div style="border-top:1px solid #EEEADF;padding-top:10px;display:flex;flex-direction:column;gap:2px">
+<span style="font-size:16px;font-weight:700;color:#2E5F1F">সবজি · Produce</span>
+<div style="display:flex;justify-content:space-between;gap:8px;padding:6px 0"><span style="font-size:16px">আলু · ২.৪ কেজি</span><span style="font-size:16px;font-weight:600">৳১২০</span></div>
+<div style="display:flex;justify-content:space-between;gap:8px;padding:6px 0"><span style="font-size:16px">পেঁয়াজ · ১.২ কেজি</span><span style="font-size:16px;font-weight:600">৳১০৮</span></div>
+</div>
+<div style="border-top:1px solid #EEEADF;padding-top:10px;display:flex;flex-direction:column;gap:2px">
+<span style="font-size:16px;font-weight:700;color:#2E5F1F">মাংস ও মাছ · Meat &amp; Fish</span>
+<div style="display:flex;justify-content:space-between;gap:8px;padding:6px 0"><span style="font-size:16px">রুই মাছ · ১.২ কেজি</span><span style="font-size:16px;font-weight:600">৳৪২০</span></div>
+<div style="display:flex;justify-content:space-between;gap:8px;padding:6px 0"><span style="font-size:16px">ব্রয়লার মুরগি · ১.৫ কেজি</span><span style="font-size:16px;font-weight:600">৳৩০০</span></div>
+</div>
+</div>
+<div style="flex:1 1 400px;min-width:0;display:flex;flex-direction:column;gap:16px">
+<span style="font-size:16px;font-weight:600;color:#2E5F1F">Smart grocery list</span>
+<h2 style="margin:0;font-size:40px;line-height:1.25;font-weight:700">একটাই লিস্ট, আপনার জন্য বানানো।</h2>
+<p style="margin:0;font-size:19px;line-height:1.65;color:#2E3A33">প্ল্যানের সব উপকরণ জুড়ে ক্যাটাগরি অনুযায়ী সাজানো লিস্ট। প্রতিটি আইটেমে পরিমাণ, দাম আর কোন রেসিপিতে লাগবে তা দেখা যায়। দোকানে কিনতে কিনতে টিক দিন, আর Compare দিয়ে দোকান বদলে দামের পার্থক্য দেখুন।</p>
+</div>
+</div>
+</section>
+
+<section id="features" style="max-width:1120px;margin:0 auto;box-sizing:border-box;padding:72px 20px;display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<span style="font-size:16px;font-weight:600;color:#2E5F1F">Why Thala</span>
+<h2 style="margin:0;font-size:40px;line-height:1.25;font-weight:700">কেন Thala?</h2>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:16px">
+<div style="flex:1 1 300px;min-width:0;background:#FFFFFF;border:1px solid #E3DECF;border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:8px"><h3 style="margin:0;font-size:21px;font-weight:700">বাজেট মিল প্ল্যান <span style="font-size:15px;font-weight:500;color:#55605A">Budget meal plans</span></h3><p style="margin:0;font-size:16px;line-height:1.6;color:#55605A">আপনার মাসিক বাজেটের মধ্যে থাকে এমন প্ল্যান।</p></div>
+<div style="flex:1 1 300px;min-width:0;background:#FFFFFF;border:1px solid #E3DECF;border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:8px"><h3 style="margin:0;font-size:21px;font-weight:700">দেশি রেসিপি <span style="font-size:15px;font-weight:500;color:#55605A">Local recipes</span></h3><p style="margin:0;font-size:16px;line-height:1.6;color:#55605A">ডাল-ভাত থেকে মাছের ঝোল, রোজকার খাবারের রেসিপি।</p></div>
+<div style="flex:1 1 300px;min-width:0;background:#FFFFFF;border:1px solid #E3DECF;border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:8px"><h3 style="margin:0;font-size:21px;font-weight:700">রেসিপি অর্গানাইজার <span style="font-size:15px;font-weight:500;color:#55605A">Recipe organiser</span></h3><p style="margin:0;font-size:16px;line-height:1.6;color:#55605A">যেকোনো জায়গা থেকে রেসিপি সেভ করে এক জায়গায় রাখুন।</p></div>
+<div style="flex:1 1 300px;min-width:0;background:#FFFFFF;border:1px solid #E3DECF;border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:8px"><h3 style="margin:0;font-size:21px;font-weight:700">স্মার্ট গ্রোসারি লিস্ট <span style="font-size:15px;font-weight:500;color:#55605A">Smart list</span></h3><p style="margin:0;font-size:16px;line-height:1.6;color:#55605A">উপকরণ নিজে থেকে জুড়ে যায়, দামসহ।</p></div>
+<div style="flex:1 1 300px;min-width:0;background:#FFFFFF;border:1px solid #E3DECF;border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:8px"><h3 style="margin:0;font-size:21px;font-weight:700">ডায়েট ও অ্যালার্জি <span style="font-size:15px;font-weight:500;color:#55605A">Diets &amp; allergies</span></h3><p style="margin:0;font-size:16px;line-height:1.6;color:#55605A">মাংস, মাছ বা ডিম বাদ দিয়ে প্ল্যান বানান।</p></div>
+<div style="flex:1 1 300px;min-width:0;background:#FFFFFF;border:1px solid #E3DECF;border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:8px"><h3 style="margin:0;font-size:21px;font-weight:700">ফ্যামিলির ক্যালোরি <span style="font-size:15px;font-weight:500;color:#55605A">Family calories</span></h3><p style="margin:0;font-size:16px;line-height:1.6;color:#55605A">বাবা, মা, ছেলে, মেয়ে, প্রত্যেকের আলাদা দৈনিক ক্যালোরি লক্ষ্য। প্ল্যানে সবার মোট ক্যালোরি দেখা যায়।</p></div>
+</div>
+</section>
+
+<section style="background:#3F7D2B;color:#FFFFFF">
+<div style="max-width:1120px;margin:0 auto;box-sizing:border-box;padding:64px 20px;display:flex;flex-direction:column;align-items:flex-start;gap:20px">
+<h2 style="margin:0;font-size:44px;line-height:1.2;font-weight:700">আপনার পরের বাজার শুরু হোক এখানেই।</h2>
+<p style="margin:0;font-size:19px;line-height:1.6;color:#F3F8EE;max-width:620px">বাজেট ঠিক করুন, প্ল্যান পান, আর টাকার চিন্তা ছাড়া বাজারে যান।</p>
+<div style="display:flex;flex-wrap:wrap;gap:12px">
+<a href="App.dc.html" style="display:inline-flex;align-items:center;min-height:56px;padding:0 26px;border-radius:14px;background:#FFFFFF;color:#2E5F1F;font-size:18px;font-weight:700;text-decoration:none">অ্যাপ খুলুন · Open app</a>
+<a href="Main.dc.html" style="display:inline-flex;align-items:center;min-height:56px;padding:0 26px;border-radius:14px;background:transparent;border:1.5px solid #FFFFFF;color:#FFFFFF;font-size:18px;font-weight:700;text-decoration:none">ক্যালোরি ক্যালকুলেটর</a>
+</div>
+</div>
+</section>
+
+<section id="faq" style="max-width:820px;margin:0 auto;box-sizing:border-box;padding:72px 20px;display:flex;flex-direction:column;gap:24px">
+<h2 style="margin:0;font-size:40px;line-height:1.25;font-weight:700">সাধারণ প্রশ্ন, সোজা উত্তর।</h2>
+<div style="display:flex;flex-direction:column;gap:10px">
+<details style="background:#FFFFFF;border:1px solid #E3DECF;border-radius:16px;padding:0 20px"><summary style="min-height:56px;display:flex;align-items:center;font-size:18px;font-weight:600">Thala কী করে?</summary><p style="margin:0 0 18px;font-size:17px;line-height:1.65;color:#55605A">আপনার বাজেট, বাজার আর পরিবারের সংখ্যা দেখে ৭ দিনের মিল প্ল্যান বানায় এবং সেই অনুযায়ী গ্রোসারি লিস্ট তৈরি করে, দামের হিসাবসহ।</p></details>
+<details style="background:#FFFFFF;border:1px solid #E3DECF;border-radius:16px;padding:0 20px"><summary style="min-height:56px;display:flex;align-items:center;font-size:18px;font-weight:600">ফ্যামিলির ক্যালোরি কীভাবে হিসাব হয়?</summary><p style="margin:0 0 18px;font-size:17px;line-height:1.65;color:#55605A">ফ্যামিলি ট্যাবে প্রত্যেক সদস্যের বয়স, ওজন, উচ্চতা, কাজের মাত্রা আর লক্ষ্য দিলে দিনে কত ক্যালোরি লাগবে তার আনুমানিক হিসাব পাবেন। প্ল্যানে প্রতিদিনের ক্যালোরি দেখা যায়, আর টাকার হিসাব থাকে বাজেট, লিস্ট ও রেসিপিতে। রোজ কী খেলেন তার হিসাব রাখে না। শিশু, গর্ভবতী বা অসুস্থ সদস্যের জন্য পুষ্টিবিদের পরামর্শ নিন।</p></details>
+<details style="background:#FFFFFF;border:1px solid #E3DECF;border-radius:16px;padding:0 20px"><summary style="min-height:56px;display:flex;align-items:center;font-size:18px;font-weight:600">নিজের পছন্দের খাবার বেছে নেওয়া যাবে?</summary><p style="margin:0 0 18px;font-size:17px;line-height:1.65;color:#55605A">হ্যাঁ। যেকোনো ঘরের রেসিপি এক ট্যাপে বদলানো যায়। চাইলে পুরো প্ল্যান নিজে বানাতে পারেন, অথবা Thala-কে বাকিটা সাজাতে দিন।</p></details>
+<details style="background:#FFFFFF;border:1px solid #E3DECF;border-radius:16px;padding:0 20px"><summary style="min-height:56px;display:flex;align-items:center;font-size:18px;font-weight:600">এতে কি সত্যিই টাকা বাঁচবে?</summary><p style="margin:0 0 18px;font-size:17px;line-height:1.65;color:#55605A">প্ল্যান আর লিস্ট বাজেট ধরে বানানো হয় বলে অকারণ কেনাকাটা কমে। তবে দাম আনুমানিক, আসল দাম বাজার ভেদে আলাদা হতে পারে।</p></details>
+<details style="background:#FFFFFF;border:1px solid #E3DECF;border-radius:16px;padding:0 20px"><summary style="min-height:56px;display:flex;align-items:center;font-size:18px;font-weight:600">দাম কত?</summary><p style="margin:0 0 18px;font-size:17px;line-height:1.65;color:#55605A">ফ্রি শুরু করা যায়। প্ল্যান বানানো আর গ্রোসারি লিস্ট পেতে কিছু লাগে না। পেইড প্ল্যান: [YOUR PRICE]।</p></details>
+<details style="background:#FFFFFF;border:1px solid #E3DECF;border-radius:16px;padding:0 20px"><summary style="min-height:56px;display:flex;align-items:center;font-size:18px;font-weight:600">কোন ডিভাইসে চলে?</summary><p style="margin:0 0 18px;font-size:17px;line-height:1.65;color:#55605A">এখন মোবাইলের জন্য ডিজাইন করা। iPhone ও Android অ্যাপের তারিখ: [YOUR LAUNCH DATE]।</p></details>
+</div>
+</section>
+
+<footer style="background:#1E2A22;color:#E9EEE9">
+<div style="max-width:1120px;margin:0 auto;box-sizing:border-box;padding:48px 20px;display:flex;flex-wrap:wrap;gap:32px 48px;justify-content:space-between">
+<div style="flex:1 1 260px;display:flex;flex-direction:column;gap:10px">
+<span style="font-size:26px;font-weight:700;color:#FFFFFF">Thala</span>
+<span style="font-size:16px;line-height:1.6;color:#C9D3CB">যারা ভালো খেতে ভালোবাসেন আর খরচ হাতে রাখতে চান, তাঁদের জন্য।</span>
+</div>
+<nav aria-label="ফুটার লিঙ্ক" style="display:flex;flex-wrap:wrap;gap:12px 40px">
+<div style="display:flex;flex-direction:column;gap:2px">
+<a href="#how" style="color:#E9EEE9;font-size:16px;padding:8px 0;text-decoration:none">How it works</a>
+<a href="#features" style="color:#E9EEE9;font-size:16px;padding:8px 0;text-decoration:none">Features</a>
+<a href="#recipes" style="color:#E9EEE9;font-size:16px;padding:8px 0;text-decoration:none">Recipes</a>
+</div>
+<div style="display:flex;flex-direction:column;gap:2px">
+<a href="#" style="color:#E9EEE9;font-size:16px;padding:8px 0;text-decoration:none">Privacy Policy</a>
+<a href="#" style="color:#E9EEE9;font-size:16px;padding:8px 0;text-decoration:none">Terms of Service</a>
+<a href="#" style="color:#E9EEE9;font-size:16px;padding:8px 0;text-decoration:none">Delete Account &amp; Data</a>
+</div>
+</nav>
+<div style="flex:1 1 220px;display:flex;flex-direction:column;gap:6px">
+<span style="font-size:16px;color:#C9D3CB">Support: [YOUR EMAIL]</span>
+<span style="font-size:16px;color:#C9D3CB">Instagram: [YOUR HANDLE]</span>
+<span style="font-size:14px;color:#C9D3CB">© ২০২৬ Thala</span>
+</div>
+</div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":3700}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

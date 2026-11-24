@@ -1,0 +1,9 @@
+# Optional: friendly URLs on Netlify
+[[redirects]]
+  from = "/app"
+  to = "/index.html?page=App"
+  status = 200
+[[redirects]]
+  from = "/main"
+  to = "/index.html?page=Main"
+  status = 200

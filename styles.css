@@ -1,0 +1,21 @@
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: #FAF8F2; }
+
+/* Phone-sized pages (the app) are shown as a centred phone frame on wide screens
+   and fill the whole screen on a real phone. */
+html:has(body.phone), body.phone { height: 100%; overflow: hidden; overscroll-behavior: none; }
+body.phone { background: #E9E4D6; }
+body.phone #root { position: fixed; top: 0; bottom: 0; left: 0; right: 0; width: 100%; max-width: 430px; margin: 0 auto; }
+body.phone #root > div { width: 100% !important; height: 100% !important; }
+
+@media (min-width: 600px) {
+  body.phone #root {
+    position: relative; inset: auto;
+    height: min(844px, calc(100dvh - 48px));
+    margin: 24px auto;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 18px 50px rgba(30, 42, 34, 0.25);
+  }
+}

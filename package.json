@@ -1,0 +1,14 @@
+{
+  "name": "thala-meal-planner",
+  "version": "1.0.0",
+  "description": "Thala: বাংলাদেশি পরিবারের মাসিক বাজেট ও ক্যালোরি অনুযায়ী মিল প্ল্যান, গ্রোসারি লিস্ট ও রেসিপি",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "start": "python3 -m http.server 8080",
+    "test": "node smoke.cjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.48.0"
+  }
+}
