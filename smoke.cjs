@@ -76,7 +76,7 @@ function check(cond, msg) {
   check(await page.locator('text=৳১৮,৫০০').count() > 0, 'budget + button adds ৳৫০০');
   await shot('2-budget');
 
-  check(await page.locator('h2:has-text("মাসে কী কিনতে পারবেন")').count() === 1 && await page.locator('text=বাজেটে বাকি থাকছে').count() + await page.locator('text=বাজেটের বেশি').count() > 0, 'budget tab lists what can be bought within the monthly budget');
+  check(await page.locator('h2:has-text("মাসে কী কিনবেন")').count() === 1 && await page.locator('text=বাজেটে বাকি থাকছে').count() + await page.locator('text=বাজেটের বেশি').count() > 0, 'budget tab lists what can be bought within the monthly budget');
   // price editor changes totals
   const monthText = async () => (await page.locator('span:has-text("/ ৳১৮,৫০০")').first().innerText()).split('/')[0].trim();
   const before = await monthText();
@@ -124,11 +124,13 @@ function check(cond, msg) {
   const weekBtns = page.locator('button[aria-label^="সপ্তাহ "]');
   const nWeeks = await weekBtns.count();
   check(nWeeks >= 4, 'month shows ' + nWeeks + ' dated weeks');
-  await weekBtns.nth(nWeeks - 1).click();
+  let otherIdx = nWeeks - 1;
+  await weekBtns.nth(otherIdx).click();
+  if (await page.locator('text=এই সপ্তাহ এখনও সেভ হয়নি').count() === 0) { otherIdx = 0; await weekBtns.nth(otherIdx).click(); } // today may fall in the last week
   check(await page.locator('text=এই সপ্তাহ এখনও সেভ হয়নি').count() > 0, 'another week opens as unsaved');
   await page.click('button:has-text("এই সপ্তাহ সেভ করুন")');
-  await weekBtns.nth(0).click();
-  await weekBtns.nth(nWeeks - 1).click();
+  await weekBtns.nth(otherIdx === 0 ? nWeeks - 1 : 0).click();
+  await weekBtns.nth(otherIdx).click();
   check(await page.locator('text=সেভ করা তালিকা').count() > 0, 'a saved week can be opened again and its items seen');
   await page.click('button:has-text("আপডেট করে সেভ করুন")');
   check(/সেভ হয়েছে/.test(await page.locator('body').innerText()), 'saved week can be updated again');
@@ -285,6 +287,39 @@ function check(cond, msg) {
   check(await page.locator('h2:has-text("নাস্তা · Breakfast")').count() === 0 && await page.locator('h2:has-text("রাত · Dinner")').count() === 1, 'recipe filter shows only dinner');
   await page.click('button[aria-pressed]:has-text("সব")');
   await page.click('nav >> text=ফ্যামিলি');
+
+  console.log('Project hub');
+  await page.click('nav >> text=ফ্যামিলি');
+  check(await page.locator('.hub-row [role="listitem"]').count() === 10, 'hub shows all cards when the page opens');
+  await page.click('button[aria-controls="hubBody"]');
+  check(await page.locator('.hub-row').count() === 0, 'hub arrow collapses the cards');
+  await page.click('button[aria-controls="hubBody"]');
+  await page.click('button[aria-label="নির্বাচিত কার্ড এডিট করুন"]');
+  await page.waitForSelector('#hubDlg');
+  await page.fill('#hubName', 'KIDS LEARNING 2');
+  await page.click('button:has-text("সেভ করুন")');
+  check(await page.locator('text=KIDS LEARNING 2').count() > 0, 'hub card can be edited');
+  await page.click('button[aria-label="নির্বাচিত কার্ড এডিট করুন"]');
+  await page.waitForTimeout(200);
+  await page.keyboard.press('Escape');
+  check(await page.locator('#hubDlg').count() === 0, 'Esc closes the hub editor');
+
+  console.log('Editable budget sections');
+  await page.click('nav >> text=বাজেট');
+  const meatHdr = page.locator('button[aria-expanded]').filter({ hasText: 'মাংস ও মাছ' });
+  await meatHdr.click();
+  check(await page.locator('#cap_meat').count() === 1, 'meat section opens with its own budget field');
+  await page.locator('#cap_meat').fill('2000');
+  const meatTxt = await meatHdr.innerText();
+  check(/২,০|১,৯/.test(meatTxt), 'section budget rescales the section total: ' + meatTxt.replace(/\s+/g, ' '));
+  const q0 = await page.locator('input[id^="q_"]').first().inputValue();
+  await page.locator('input[id^="t_"]').first().fill('500');
+  const q1 = await page.locator('input[id^="q_"]').first().inputValue();
+  check(q0 !== q1, 'editing the amount changes the quantity: ' + q0 + ' -> ' + q1);
+  await page.locator('#budgetInput').fill('30000');
+  check((await page.locator('#budgetInput').inputValue()) === '30000', 'monthly budget can be typed');
+  await page.click('button:has-text("সব অটো করুন")');
+  await page.click('nav >> text=প্ল্যান');
 
   console.log('Built-in dish photos');
   await page.click('nav >> text=রেসিপি');
